@@ -16,6 +16,7 @@ CremaPlace es una aplicación web diseñada para gestionar el catálogo de produ
 
 ## Arquitectura
 - **Dashboard:** Implementación única con fragmentos dinámicos (`Thymeleaf`) según el rol del usuario.
+- **Seguridad:** El primer usuario registrado obtiene automáticamente el rol `ADMIN`.
 
 ## Reglas de Negocio
 Para más detalles, consultar el archivo `docs/BUSINESS_RULES.md`.

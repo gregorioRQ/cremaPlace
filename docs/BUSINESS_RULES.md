@@ -47,6 +47,7 @@
 ## 6. Registro y Autenticación
 - **Registro:**
     - Inmediato tras completar el formulario.
+    - **Administración Inicial:** El primer usuario registrado obtiene automáticamente el rol `ADMIN`.
     - Email único.
     - Campos obligatorios: Nombre, Email, Teléfono.
     - Contraseña: Mínimo 8 caracteres (sin requisitos de complejidad).
