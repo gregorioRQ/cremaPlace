@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+    <div th:replace="~{layout/main-layout :: layout(~{::mainContent})}">
+        <main th:fragment="mainContent">
+            <h2>Pedidos</h2>
+            <table>
+                <tr>
+                    <th>ID</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+                <tr th:each="pedido : ${pedidos}">
+                    <td th:text="${pedido.id}"></td>
+                    <td th:text="${pedido.estado}"></td>
+                    <td>
+                        <form th:action="@{/pedidos/updateEstado}" method="post" th:if="${#authorization.expression('hasRole(''COCINERO'')')}">
+                            <input type="hidden" name="id" th:value="${pedido.id}"/>
+                            <select name="estado">
+                                <option value="En Preparación">En Preparación</option>
+                                <option value="Listo">Listo</option>
+                            </select>
+                            <button type="submit">Actualizar</button>
+                        </form>
+                    </td>
+                </tr>
+            </table>
+            <a href="/dashboard">Volver al Dashboard</a>
+        </main>
+    </div>
+</body>
+</html>

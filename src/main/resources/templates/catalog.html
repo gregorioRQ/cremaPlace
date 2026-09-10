@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+    <div th:replace="~{layout/main-layout :: layout(~{::mainContent})}">
+        <main th:fragment="mainContent">
+            <h2>Catálogo de Productos</h2>
+            
+            <h3>Alfajores</h3>
+            <ul>
+                <li th:each="alfajor : ${alfajores}">
+                    <span th:text="${alfajor.sabor}"></span> - 
+                    <span th:text="${alfajor.tamano}"></span>: 
+                    $<span th:text="${alfajor.precio}"></span>
+                </li>
+            </ul>
+
+            <h3>Tartas</h3>
+            <ul>
+                <li th:each="tarta : ${tartas}">
+                    <span th:text="${tarta.sabor}"></span>: 
+                    $<span th:text="${tarta.precioUnidad}"></span> (Unidad)
+                </li>
+            </ul>
+            
+            <a href="/dashboard">Volver al Dashboard</a>
+        </main>
+    </div>
+</body>
+</html>

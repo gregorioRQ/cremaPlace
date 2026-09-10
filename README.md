@@ -10,7 +10,12 @@ CremaPlace es una aplicación web diseñada para gestionar el catálogo de produ
 - **Base de Datos:** MongoDB
 - **Gestor de dependencias:** Maven
 - **Frontend:** Thymeleaf + Vanilla JS
-- **Seguridad:** Spring Security (Manejo de roles)
+- **Seguridad:** Spring Security (Manejo de roles y sesiones)
+- **APIs:** REST (CRUD y lógica) + SOAP (Catálogo)
+- **Observabilidad:** AOP (Aspect Oriented Programming) para Logging
+
+## Arquitectura
+- **Dashboard:** Implementación única con fragmentos dinámicos (`Thymeleaf`) según el rol del usuario.
 
 ## Reglas de Negocio
 Para más detalles, consultar el archivo `docs/BUSINESS_RULES.md`.

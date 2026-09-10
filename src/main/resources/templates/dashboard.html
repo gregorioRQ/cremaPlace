@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+    <div th:replace="~{layout/main-layout :: layout(~{::mainContent})}">
+        <main th:fragment="mainContent">
+            <h2>Welcome to your Dashboard</h2>
+            
+            <div th:if="${role == 'USER'}" th:replace="~{fragments/dashboard-fragments :: user-content}"></div>
+            <div th:if="${role == 'COCINERO'}" th:replace="~{fragments/dashboard-fragments :: cocinero-content}"></div>
+            <div th:if="${role == 'STOCK_MANAGER'}" th:replace="~{fragments/dashboard-fragments :: stock-content}"></div>
+            <div th:if="${role == 'ADMIN'}" th:replace="~{fragments/dashboard-fragments :: admin-content}"></div>
+        </main>
+    </div>
+</body>
+</html>

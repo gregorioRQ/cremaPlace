@@ -43,3 +43,14 @@
 | **Inventario** | - | - | Ver/Editar | Total |
 | **Compras/Proveedores** | - | - | Total | Total |
 | **Usuarios** | Solo propio perfil | - | - | Total |
+
+## 6. Registro y Autenticación
+- **Registro:**
+    - Inmediato tras completar el formulario.
+    - Email único.
+    - Campos obligatorios: Nombre, Email, Teléfono.
+    - Contraseña: Mínimo 8 caracteres (sin requisitos de complejidad).
+- **Login y Sesión:**
+    - Duración de sesión: 30 minutos de inactividad.
+    - Bloqueo de cuenta: Tras 8 intentos fallidos consecutivos.
+

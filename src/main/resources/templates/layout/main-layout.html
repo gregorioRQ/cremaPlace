@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:fragment="layout(content)">
+<head>
+    <title>CremaPlace</title>
+</head>
+<body>
+    <header>
+        <h1>CremaPlace</h1>
+        <form th:action="@{/logout}" method="post">
+            <button type="submit">Logout</button>
+        </form>
+    </header>
+    
+    <main th:replace="${content}"></main>
+    
+    <footer><p>&copy; 2026 CremaPlace</p></footer>
+</body>
+</html>

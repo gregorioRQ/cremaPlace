@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+    <div th:fragment="user-content">
+        <h3>User Dashboard</h3>
+        <p>Manage your orders here.</p>
+        <a href="/catalog">Ver Catálogo</a>
+    </div>
+
+    <div th:fragment="cocinero-content">
+        <h3>Cocinero Dashboard</h3>
+        <p>Manage production and preparation times.</p>
+        <a href="/catalog">Ver Catálogo</a>
+    </div>
+
+    <div th:fragment="stock-content">
+        <h3>Stock Manager Dashboard</h3>
+        <p>Manage inventory and suppliers.</p>
+        <a href="/catalog">Ver Catálogo</a>
+    </div>
+
+    <div th:fragment="admin-content">
+        <h3>Admin Dashboard</h3>
+        <p>Total system control.</p>
+        <a href="/catalog">Ver Catálogo</a>
+    </div>
+</body>
+</html>
