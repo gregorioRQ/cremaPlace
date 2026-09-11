@@ -20,9 +20,233 @@
     </div>
 
     <div th:fragment="admin-content">
-        <h3>Admin Dashboard</h3>
-        <p>Total system control.</p>
-        <a href="/catalog">Ver Catálogo</a>
+        <h3>Panel de Administración General (ADMIN)</h3>
+        <p>Control total del sistema: gestión de usuarios, catálogo, pedidos e inventario.</p>
+        
+        <div class="nav-links">
+            <a href="#sec-usuarios">👥 Usuarios</a>
+            <a href="#sec-catalogo">🍰 Catálogo</a>
+            <a href="#sec-pedidos">📦 Pedidos</a>
+            <a href="#sec-inventario">📊 Inventario</a>
+            <a href="/catalog" target="_blank">👁️ Ver Catálogo Público</a>
+        </div>
+
+        <!-- 1. GESTIÓN DE USUARIOS Y ROLES -->
+        <div id="sec-usuarios" class="card">
+            <h4>1. Gestión de Usuarios y Roles</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Usuario</th>
+                        <th>Email</th>
+                        <th>Teléfono</th>
+                        <th>Rol Actual</th>
+                        <th>Estado de Cuenta</th>
+                        <th>Cambiar Rol</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="u : ${users}">
+                        <td th:text="${u.username}">admin</td>
+                        <td th:text="${u.email}">admin@cremaplace.com</td>
+                        <td th:text="${u.phoneNumber}">12345678</td>
+                        <td>
+                            <span class="badge badge-info" th:each="r : ${u.roles}" th:text="${r}">ADMIN</span>
+                        </td>
+                        <td>
+                            <span th:if="${u.failedLoginAttempts >= 8}" class="badge badge-danger">Bloqueada (8+ fallos)</span>
+                            <span th:unless="${u.failedLoginAttempts >= 8}" class="badge badge-success">Activa</span>
+                        </td>
+                        <td>
+                            <form th:action="@{'/dashboard/admin/users/' + ${u.id} + '/role'}" method="post" style="display: flex; gap: 5px;">
+                                <select name="role">
+                                    <option value="USER" th:selected="${u.roles.contains('USER')}">USER</option>
+                                    <option value="COCINERO" th:selected="${u.roles.contains('COCINERO')}">COCINERO</option>
+                                    <option value="STOCK_MANAGER" th:selected="${u.roles.contains('STOCK_MANAGER')}">STOCK_MANAGER</option>
+                                    <option value="ADMIN" th:selected="${u.roles.contains('ADMIN')}">ADMIN</option>
+                                </select>
+                                <button type="submit">Asignar</button>
+                            </form>
+                        </td>
+                        <td>
+                            <form th:if="${u.failedLoginAttempts >= 8}" th:action="@{'/dashboard/admin/users/' + ${u.id} + '/unlock'}" method="post">
+                                <button type="submit" class="btn-success">Desbloquear</button>
+                            </form>
+                            <span th:unless="${u.failedLoginAttempts >= 8}">-</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 2. GESTIÓN TOTAL DEL CATÁLOGO -->
+        <div id="sec-catalogo" class="card">
+            <h4>2. Gestión del Catálogo de Productos</h4>
+
+            <!-- Alfajores -->
+            <h5>Alfajores</h5>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Sabor</th>
+                        <th>Tamaño</th>
+                        <th>Precio</th>
+                        <th>Tiempo Prep. (min)</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="a : ${alfajores}">
+                        <td th:text="${a.id}">a1</td>
+                        <td th:text="${a.sabor}">Chocolate</td>
+                        <td th:text="${a.tamano}">Simple</td>
+                        <td th:text="'$' + ${a.precio}">$10.0</td>
+                        <td th:text="${a.tiempoPreparacion} + ' min'">5 min</td>
+                        <td>
+                            <form th:action="@{/dashboard/admin/catalog/alfajor/delete}" method="post">
+                                <input type="hidden" name="id" th:value="${a.id}"/>
+                                <button type="submit" class="btn-danger">Eliminar</button>
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <form th:action="@{/dashboard/admin/catalog/alfajor/add}" method="post" style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                <strong>Nuevo Alfajor:</strong>
+                <input type="text" name="sabor" placeholder="Sabor (ej: Maicena)" required/>
+                <select name="tamano" required>
+                    <option value="Simple">Simple</option>
+                    <option value="Triple">Triple</option>
+                </select>
+                <input type="number" step="0.01" name="precio" placeholder="Precio ($)" required min="0"/>
+                <input type="number" name="tiempoPreparacion" placeholder="Tiempo Prep. (min)" required min="1"/>
+                <button type="submit" class="btn-success">+ Agregar Alfajor</button>
+            </form>
+
+            <hr style="margin: 20px 0; border: none; border-top: 1px solid #dee2e6;"/>
+
+            <!-- Tartas -->
+            <h5>Tartas</h5>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Sabor</th>
+                        <th>Precio Unidad</th>
+                        <th>Precio Mitad (50%)</th>
+                        <th>Tiempo Prep. (min)</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="t : ${tartas}">
+                        <td th:text="${t.id}">t1</td>
+                        <td th:text="${t.sabor}">Frutilla</td>
+                        <td th:text="'$' + ${t.precioUnidad}">$100.0</td>
+                        <td th:text="'$' + (${t.precioUnidad} * 0.5)">$50.0</td>
+                        <td th:text="${t.tiempoPreparacion} + ' min'">30 min</td>
+                        <td>
+                            <form th:action="@{/dashboard/admin/catalog/tarta/delete}" method="post">
+                                <input type="hidden" name="id" th:value="${t.id}"/>
+                                <button type="submit" class="btn-danger">Eliminar</button>
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <form th:action="@{/dashboard/admin/catalog/tarta/add}" method="post" style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                <strong>Nueva Tarta:</strong>
+                <input type="text" name="sabor" placeholder="Sabor (ej: Ricota)" required/>
+                <input type="number" step="0.01" name="precioUnidad" placeholder="Precio Unidad ($)" required min="0"/>
+                <input type="number" name="tiempoPreparacion" placeholder="Tiempo Prep. (min)" required min="1"/>
+                <button type="submit" class="btn-success">+ Agregar Tarta</button>
+            </form>
+        </div>
+
+        <!-- 3. CONTROL DE PEDIDOS -->
+        <div id="sec-pedidos" class="card">
+            <h4>3. Control de Pedidos</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Cliente</th>
+                        <th>Alfajores (IDs)</th>
+                        <th>Tartas (IDs)</th>
+                        <th>Estado Actual</th>
+                        <th>Cambiar Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="p : ${pedidos}">
+                        <td th:text="${p.id}">1</td>
+                        <td th:text="${p.userEmail}">cliente@cremaplace.com</td>
+                        <td th:text="${p.alfajoresIds}">[a1, a1]</td>
+                        <td th:text="${p.tartasIds}">[t1]</td>
+                        <td>
+                            <span class="badge badge-warning" th:text="${p.estado}">Pendiente</span>
+                        </td>
+                        <td>
+                            <form th:action="@{/dashboard/admin/pedidos/updateEstado}" method="post" style="display: flex; gap: 5px;">
+                                <input type="hidden" name="id" th:value="${p.id}"/>
+                                <select name="estado">
+                                    <option value="Pendiente" th:selected="${p.estado == 'Pendiente'}">Pendiente</option>
+                                    <option value="Pagado" th:selected="${p.estado == 'Pagado'}">Pagado</option>
+                                    <option value="En Preparación" th:selected="${p.estado == 'En Preparación'}">En Preparación</option>
+                                    <option value="Listo" th:selected="${p.estado == 'Listo'}">Listo</option>
+                                    <option value="Entregado" th:selected="${p.estado == 'Entregado'}">Entregado</option>
+                                    <option value="Cancelado" th:selected="${p.estado == 'Cancelado'}">Cancelado</option>
+                                </select>
+                                <button type="submit">Actualizar</button>
+                            </form>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(pedidos)}">
+                        <td colspan="6" style="text-align: center; color: #6c757d;">No hay pedidos registrados en el sistema.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 4. CONTROL DE INVENTARIO Y STOCK -->
+        <div id="sec-inventario" class="card">
+            <h4>4. Control de Inventario y Stock</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Código Producto</th>
+                        <th>Nombre Producto</th>
+                        <th>Stock Actual</th>
+                        <th>Estado de Venta</th>
+                        <th>Ajustar Stock</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="item : ${inventory}">
+                        <td th:text="${item.productId}">a1</td>
+                        <td th:text="${item.productName}">Alfajor Chocolate Simple</td>
+                        <td th:text="${item.stock}">50</td>
+                        <td>
+                            <span th:if="${item.stock == 0}" class="badge badge-danger">AGOTADO (Venta Deshabilitada)</span>
+                            <span th:if="${item.stock > 0 and item.stock <= 10}" class="badge badge-warning">Bajo Stock (<span th:text="${item.stock}"></span>)</span>
+                            <span th:if="${item.stock > 10}" class="badge badge-success">Disponible</span>
+                        </td>
+                        <td>
+                            <form th:action="@{/dashboard/admin/inventory/update}" method="post" style="display: flex; gap: 5px;">
+                                <input type="hidden" name="productId" th:value="${item.productId}"/>
+                                <input type="number" name="stock" th:value="${item.stock}" min="0" style="width: 80px;" required/>
+                                <button type="submit">Guardar</button>
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
+
 </body>
 </html>

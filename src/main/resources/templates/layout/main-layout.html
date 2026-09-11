@@ -1,18 +1,51 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" th:fragment="layout(content)">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CremaPlace</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background: #f8f9fa; color: #333; }
+        header { background: #6f42c1; color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
+        header h1 { margin: 0; font-size: 24px; }
+        header form button { background: #dc3545; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; }
+        header form button:hover { background: #c82333; }
+        main { max-width: 1200px; margin: 25px auto; padding: 20px; background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+        h2, h3, h4 { color: #495057; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; margin-bottom: 25px; }
+        th, td { border: 1px solid #dee2e6; padding: 10px 12px; text-align: left; }
+        th { background: #e9ecef; }
+        tr:nth-child(even) { background-color: #fdfdfe; }
+        .card { border: 1px solid #e2e8f0; border-radius: 6px; padding: 18px; margin-bottom: 24px; background: #fafbfc; }
+        button, input[type="submit"] { background: #007bff; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; }
+        button:hover, input[type="submit"]:hover { background: #0056b3; }
+        .btn-danger { background: #dc3545; }
+        .btn-danger:hover { background: #bd2130; }
+        .btn-success { background: #28a745; }
+        .btn-success:hover { background: #218838; }
+        input, select { padding: 6px 10px; border: 1px solid #ced4da; border-radius: 4px; margin: 4px 0; }
+        .badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; }
+        .badge-danger { background: #f8d7da; color: #721c24; }
+        .badge-success { background: #d4edda; color: #155724; }
+        .badge-warning { background: #fff3cd; color: #856404; }
+        .badge-info { background: #d1ecf1; color: #0c5460; }
+        footer { text-align: center; padding: 15px; color: #6c757d; font-size: 14px; margin-top: 30px; }
+        .nav-links { margin-bottom: 20px; }
+        .nav-links a { margin-right: 15px; color: #6f42c1; text-decoration: none; font-weight: bold; }
+        .nav-links a:hover { text-decoration: underline; }
+    </style>
 </head>
 <body>
     <header>
-        <h1>CremaPlace</h1>
+        <h1>CremaPlace - Tienda de Dulces</h1>
         <form th:action="@{/logout}" method="post">
-            <button type="submit">Logout</button>
+            <button type="submit">Cerrar Sesión</button>
         </form>
     </header>
     
     <main th:replace="${content}"></main>
     
-    <footer><p>&copy; 2026 CremaPlace</p></footer>
+    <footer><p>&copy; 2026 CremaPlace - Sistema de Gestión</p></footer>
 </body>
 </html>
+

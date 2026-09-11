@@ -37,4 +37,5 @@ public class User {
 
     public void setFailedLoginAttempts(int failedLoginAttempts) { this.failedLoginAttempts = failedLoginAttempts; }
     public void setPassword(String password) { this.password = password; }
+    public void setRoles(List<String> roles) { this.roles = roles; }
 }
