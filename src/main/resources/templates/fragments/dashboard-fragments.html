@@ -1,15 +1,111 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <body>
+    <div th:fragment="cocinero-content">
+        <h3>Panel de Producción y Cocina (COCINERO)</h3>
+        <p>Gestión de tiempos de preparación y estado de los pedidos listos para producción.</p>
+        
+        <div class="nav-links">
+            <a href="#sec-cola-cocina">🍳 Cola de Cocina</a>
+            <a href="#sec-catalogo-consulta">📖 Consulta de Catálogo</a>
+        </div>
+
+        <!-- 1. COLA DE COCINA -->
+        <div id="sec-cola-cocina" class="card">
+            <h4>1. Cola de Pedidos (Pagados y En Preparación)</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID Pedido</th>
+                        <th>Cliente</th>
+                        <th>Alfajores (IDs)</th>
+                        <th>Tartas (IDs)</th>
+                        <th>Estado Actual</th>
+                        <th>Tiempo Est. (min)</th>
+                        <th>Acciones de Cocina</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="p : ${pedidos}">
+                        <td th:text="${p.id}">1</td>
+                        <td th:text="${p.userEmail}">cliente@cremaplace.com</td>
+                        <td th:text="${p.alfajoresIds}">[a1, a1]</td>
+                        <td th:text="${p.tartasIds}">[t1]</td>
+                        <td>
+                            <span class="badge badge-warning" th:text="${p.estado}">Pagado</span>
+                        </td>
+                        <td>
+                            <span th:text="${p.tiempoEstimadoMinutos} + ' min'" style="font-weight: bold;">40 min</span>
+                        </td>
+                        <td>
+                            <!-- Si está Pagado, permitir iniciar y ajustar tiempo manual -->
+                            <form th:if="${p.estado == 'Pagado'}" th:action="@{/dashboard/cocinero/pedidos/iniciar}" method="post" style="display: flex; gap: 5px; align-items: center;">
+                                <input type="hidden" name="id" th:value="${p.id}"/>
+                                <input type="number" name="tiempoEstimado" th:value="${p.tiempoEstimadoMinutos}" min="1" style="width: 70px;" title="Ajustar tiempo manual"/>
+                                <button type="submit" class="btn-success">Iniciar</button>
+                            </form>
+
+                            <!-- Si está En Preparación, permitir marcar como Listo -->
+                            <form th:if="${p.estado == 'En Preparación'}" th:action="@{/dashboard/cocinero/pedidos/completar}" method="post">
+                                <input type="hidden" name="id" th:value="${p.id}"/>
+                                <button type="submit" style="background: #17a2b8; color: white;">Marcar Listo</button>
+                            </form>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(pedidos)}">
+                        <td colspan="7" style="text-align: center; color: #6c757d;">No hay pedidos pendientes en la cola de cocina.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 2. CONSULTA DE CATÁLOGO -->
+        <div id="sec-catalogo-consulta" class="card">
+            <h4>2. Consulta de Catálogo y Tiempos Base</h4>
+            
+            <h5>Alfajores</h5>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Sabor</th>
+                        <th>Tamaño</th>
+                        <th>Tiempo Prep. Base</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="a : ${alfajores}">
+                        <td th:text="${a.id}">a1</td>
+                        <td th:text="${a.sabor}">Chocolate</td>
+                        <td th:text="${a.tamano}">Simple</td>
+                        <td th:text="${a.tiempoPreparacion} + ' min'">5 min</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h5>Tartas</h5>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Sabor</th>
+                        <th>Tiempo Prep. Base</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="t : ${tartas}">
+                        <td th:text="${t.id}">t1</td>
+                        <td th:text="${t.sabor}">Frutilla</td>
+                        <td th:text="${t.tiempoPreparacion} + ' min'">30 min</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
     <div th:fragment="user-content">
         <h3>User Dashboard</h3>
         <p>Manage your orders here.</p>
-        <a href="/catalog">Ver Catálogo</a>
-    </div>
-
-    <div th:fragment="cocinero-content">
-        <h3>Cocinero Dashboard</h3>
-        <p>Manage production and preparation times.</p>
         <a href="/catalog">Ver Catálogo</a>
     </div>
 
@@ -18,6 +114,7 @@
         <p>Manage inventory and suppliers.</p>
         <a href="/catalog">Ver Catálogo</a>
     </div>
+
 
     <div th:fragment="admin-content">
         <h3>Panel de Administración General (ADMIN)</h3>

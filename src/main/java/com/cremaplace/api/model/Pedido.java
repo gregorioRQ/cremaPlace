@@ -8,6 +8,7 @@ public class Pedido {
     private List<String> alfajoresIds; // Simple
     private List<String> tartasIds; // Half
     private String estado; // Pendiente, Pagado, En Preparación, Listo, Entregado
+    private int tiempoEstimadoMinutos;
 
     public Pedido(String id, String userEmail, List<String> alfajoresIds, List<String> tartasIds) {
         this.id = id;
@@ -15,6 +16,7 @@ public class Pedido {
         this.alfajoresIds = alfajoresIds;
         this.tartasIds = tartasIds;
         this.estado = "Pendiente";
+        this.tiempoEstimadoMinutos = 0;
     }
 
     public String getId() { return id; }
@@ -23,4 +25,6 @@ public class Pedido {
     public List<String> getTartasIds() { return tartasIds; }
     public String getEstado() { return estado; }
     public void setEstado(String estado) { this.estado = estado; }
+    public int getTiempoEstimadoMinutos() { return tiempoEstimadoMinutos; }
+    public void setTiempoEstimadoMinutos(int tiempoEstimadoMinutos) { this.tiempoEstimadoMinutos = tiempoEstimadoMinutos; }
 }
