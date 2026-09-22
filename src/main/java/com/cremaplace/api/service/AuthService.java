@@ -18,7 +18,7 @@ public class AuthService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    @Transactional
+
     public void registerUser(String username, String email, String password, String phoneNumber) {
         if (userRepository.findByEmail(email).isPresent()) {
             throw new RuntimeException("Email already exists");

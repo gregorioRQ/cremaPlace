@@ -26,7 +26,7 @@ public class CocineroController {
         model.addAttribute("pedidos", orderService.getPedidosParaCocina());
         model.addAttribute("alfajores", catalogService.getAllAlfajores());
         model.addAttribute("tartas", catalogService.getAllTartas());
-        return "dashboard";
+        return "cocinero";
     }
 
     @PostMapping("/pedidos/iniciar")

@@ -43,14 +43,6 @@ public class DashboardController {
         return "dashboard";
     }
 
-    @GetMapping("/cocinero")
-    public String cocineroDashboard(Model model) {
-        model.addAttribute("role", "COCINERO");
-        model.addAttribute("pedidos", orderService.getPedidosParaCocina());
-        model.addAttribute("alfajores", catalogService.getAllAlfajores());
-        model.addAttribute("tartas", catalogService.getAllTartas());
-        return "dashboard";
-    }
 
     @GetMapping("/user")
     public String userDashboard(Model model) {

@@ -32,7 +32,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             true, // credentialsNonExpired
             user.getFailedLoginAttempts() < 8, // accountNonLocked
             user.getRoles().stream()
-                .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.toUpperCase()))
                 .collect(Collectors.toList())
         );
     }
