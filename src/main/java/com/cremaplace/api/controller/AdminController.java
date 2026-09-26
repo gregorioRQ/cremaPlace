@@ -64,6 +64,25 @@ public class AdminController {
         return "redirect:/dashboard/admin";
     }
 
+    @PostMapping("/catalog/alfajor/update")
+    public String updateAlfajor(@RequestParam String id,
+                               @RequestParam String sabor,
+                               @RequestParam String tamano,
+                               @RequestParam double precio,
+                               @RequestParam int tiempoPreparacion) {
+        catalogService.updateAlfajor(id, sabor, tamano, precio, tiempoPreparacion);
+        return "redirect:/dashboard/admin";
+    }
+
+    @PostMapping("/catalog/tarta/update")
+    public String updateTarta(@RequestParam String id,
+                             @RequestParam String sabor,
+                             @RequestParam double precioUnidad,
+                             @RequestParam int tiempoPreparacion) {
+        catalogService.updateTarta(id, sabor, precioUnidad, tiempoPreparacion);
+        return "redirect:/dashboard/admin";
+    }
+
     @PostMapping("/inventory/update")
     public String updateStock(@RequestParam String productId, @RequestParam int stock) {
         inventoryService.updateStock(productId, stock);

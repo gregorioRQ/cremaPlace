@@ -17,4 +17,16 @@ public class Tarta {
     public String getSabor() { return sabor; }
     public double getPrecioUnidad() { return precioUnidad; }
     public int getTiempoPreparacion() { return tiempoPreparacion; }
+
+    public void setSabor(String sabor) {
+        this.sabor = sabor;
+    }
+
+    public void setPrecioUnidad(double precioUnidad) {
+        this.precioUnidad = precioUnidad;
+    }
+
+    public void setTiempoPreparacion(int tiempoPreparacion) {
+        this.tiempoPreparacion = tiempoPreparacion;
+    }
 }

@@ -20,4 +20,20 @@ public class Alfajor {
     public String getTamano() { return tamano; }
     public double getPrecio() { return precio; }
     public int getTiempoPreparacion() { return tiempoPreparacion; }
+
+    public void setSabor(String sabor) {
+        this.sabor = sabor;
+    }
+
+    public void setTamano(String tamano) {
+        this.tamano = tamano;
+    }
+
+    public void setPrecio(double precio) {
+        this.precio = precio;
+    }
+
+    public void setTiempoPreparacion(int tiempoPreparacion) {
+        this.tiempoPreparacion = tiempoPreparacion;
+    }
 }

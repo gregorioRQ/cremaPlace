@@ -6,7 +6,9 @@
             <a href="/" class="navbar-brand">CremaPlace</a>
             <div class="navbar-nav">
                 <a href="/dashboard/user" class="nav-item">Mi Panel</a>
-                <a href="/logout" class="nav-item">Cerrar Sesión</a>
+                <form th:action="@{/logout}" method="post" class="logout-form">
+                    <button type="submit" class="nav-item logout-button">Cerrar Sesión</button>
+                </form>
             </div>
         </nav>
     </div>

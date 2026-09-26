@@ -51,4 +51,27 @@ public class CatalogService {
         tartas.removeIf(t -> t.getId().equals(id));
         inventoryService.removeInventoryItem(id);
     }
+
+    public void updateAlfajor(String id, String sabor, String tamano, double precio, int tiempoPreparacion) {
+        for (Alfajor alfajor : alfajores) {
+            if (alfajor.getId().equals(id)) {
+                alfajor.setSabor(sabor);
+                alfajor.setTamano(tamano);
+                alfajor.setPrecio(precio);
+                alfajor.setTiempoPreparacion(tiempoPreparacion);
+                return;
+            }
+        }
+    }
+
+    public void updateTarta(String id, String sabor, double precioUnidad, int tiempoPreparacion) {
+        for (Tarta tarta : tartas) {
+            if (tarta.getId().equals(id)) {
+                tarta.setSabor(sabor);
+                tarta.setPrecioUnidad(precioUnidad);
+                tarta.setTiempoPreparacion(tiempoPreparacion);
+                return;
+            }
+        }
+    }
 }
