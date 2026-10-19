@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<div th:replace="~{layout/main-layout :: layout(~{::mainContent})}">
+    <main th:fragment="mainContent">
+        <h2>Panel de Gestión de Ingresos</h2>
+        
+        <div class="nav-links">
+            <a href="/dashboard/stock">← Volver al Panel de Ingredientes</a>
+            <a href="/dashboard/admin">Panel de Administración</a>
+        </div>
+        
+        <!-- Notification Bell for Low Stock -->
+        <div style="position: relative; float: right; margin-top: -20px;">
+            <button style="background: none; border: none; font-size: 24px; cursor: pointer;" 
+                    th:onclick="|location.href='@{/dashboard/stock/low-stock}'|">
+                🔔
+                <span th:if="${lowStockCount > 0}" 
+                      style="position: absolute; top: -8px; right: -8px; background: red; color: white; 
+                             border-radius: 50%; padding: 2px 6px; font-size: 12px;"
+                      th:text="${lowStockCount}">0</span>
+            </button>
+        </div>
+        
+        <div class="card">
+            <h3>Inventario de Ingredientes</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID Ingrediente</th>
+                        <th>Nombre Ingrediente</th>
+                        <th>Stock Actual</th>
+                        <th>Umbral Mínimo</th>
+                        <th>Estado</th>
+                        <th>Agregar Stock</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="ingredient : ${ingredients}">
+                        <td th:text="${ingredient.ingredientId}">harina</td>
+                        <td th:text="${ingredient.ingredientName}">Harina</td>
+                        <td th:text="${ingredient.stock}">1000</td>
+                        <td th:text="${ingredient.minStockThreshold}">100</td>
+                        <td>
+                            <span th:if="${ingredient.stock <= ingredient.minStockThreshold}" 
+                                  class="badge badge-danger">STOCK BAJO</span>
+                            <span th:if="${ingredient.stock > ingredient.minStockThreshold and ingredient.stock <= ingredient.minStockThreshold * 2}" 
+                                  class="badge badge-warning">PRECAUCIÓN</span>
+                            <span th:if="${ingredient.stock > ingredient.minStockThreshold * 2}" 
+                                  class="badge badge-success">OK</span>
+                        </td>
+                        <td>
+                            <form th:action="@{/dashboard/stock/add-stock}" method="post" style="display: flex; gap: 5px;">
+                                <input type="hidden" name="ingredientId" th:value="${ingredient.ingredientId}"/>
+                                <input type="number" name="quantity" min="1" value="100" style="width: 80px;" required/>
+                                <button type="submit">Agregar</button>
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="card">
+            <h3>Estadísticas de Stock Bajo</h3>
+            <p>Ingredientes con stock bajo: <span th:text="${lowStockCount}" style="font-weight: bold; color: #dc3545;">0</span></p>
+            <p th:if="${lowStockCount > 0}">
+                <a th:href="@{/dashboard/stock/low-stock}" style="color: #6f42c1; font-weight: bold;">
+                    Ver lista detallada →
+                </a>
+            </p>
+        </div>
+        
+        <a href="/dashboard">Volver al Dashboard Principal</a>
+    </main>
+</div>
+</html>

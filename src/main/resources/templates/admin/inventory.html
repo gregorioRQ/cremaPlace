@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+    <div th:replace="~{layout/main-layout :: layout(~{::mainContent})}">
+        <main th:fragment="mainContent">
+            <h2>Control de Inventario</h2>
+            
+            <div class="nav-links">
+                <a href="/dashboard/admin">← Volver al Panel de Administración</a>
+                <a href="/dashboard/admin/users">Gestión de Usuarios</a>
+                <a href="/dashboard/admin/catalog">Gestión de Catálogo</a>
+                <a href="/dashboard/admin/orders">Control de Pedidos</a>
+            </div>
+            
+            <!-- Control de Inventario y Stock -->
+            <div class="card">
+                <h3>Control de Inventario y Stock</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Código Producto</th>
+                            <th>Nombre Producto</th>
+                            <th>Stock Actual</th>
+                            <th>Estado de Venta</th>
+                            <th>Ajustar Stock</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="item : ${inventory}">
+                            <td th:text="${item.productId}">a1</td>
+                            <td th:text="${item.productName}">Alfajor Chocolate Simple</td>
+                            <td th:text="${item.stock}">50</td>
+                            <td>
+                                <span th:if="${item.stock == 0}" class="badge badge-danger">AGOTADO (Venta Deshabilitada)</span>
+                                <span th:if="${item.stock > 0 and item.stock <= 10}" class="badge badge-warning">Bajo Stock (<span th:text="${item.stock}"></span>)</span>
+                                <span th:if="${item.stock > 10}" class="badge badge-success">Disponible</span>
+                            </td>
+                            <td>
+                                <form th:action="@{/dashboard/admin/inventory/update}" method="post" style="display: flex; gap: 5px;">
+                                    <input type="hidden" name="productId" th:value="${item.productId}"/>
+                                    <input type="number" name="stock" th:value="${item.stock}" min="0" style="width: 80px;" required/>
+                                    <button type="submit">Guardar</button>
+                                </form>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <a href="/dashboard">Volver al Dashboard Principal</a>
+        </main>
+    </div>
+</body>
+</html>

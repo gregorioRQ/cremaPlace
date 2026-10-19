@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<div th:replace="~{layout/main-layout :: layout(~{::mainContent})}">
+    <main th:fragment="mainContent">
+        <h2>Ingredientes con Stock Bajo</h2>
+        
+        <div class="nav-links">
+            <a href="/dashboard/stock">← Volver al Panel de Ingredientes</a>
+            <a href="/dashboard/admin">Panel de Administración</a>
+        </div>
+        
+        <div th:if="${ingredients.isEmpty()}" class="alert alert-info">
+            No hay ingredientes con stock bajo en este momento.
+        </div>
+        
+        <div th:unless="${ingredients.isEmpty()}">
+            <div class="card">
+                <h3>Lista de Ingredientes que Necesitan Reposición</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID Ingrediente</th>
+                            <th>Nombre Ingrediente</th>
+                            <th>Stock Actual</th>
+                            <th>Umbral Mínimo</th>
+                            <th>Faltante</th>
+                            <th>Agregar Stock</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="ingredient : ${ingredients}">
+                            <td th:text="${ingredient.ingredientId}">harina</td>
+                            <td th:text="${ingredient.ingredientName}">Harina</td>
+                            <td th:text="${ingredient.stock}">50</td>
+                            <td th:text="${ingredient.minStockThreshold}">100</td>
+                            <td th:text="${ingredient.minStockThreshold - ingredient.stock}" style="color: #dc3545; font-weight: bold;">50</td>
+                            <td>
+                                <form th:action="@{/dashboard/stock/add-stock}" method="post" style="display: flex; gap: 5px;">
+                                    <input type="hidden" name="ingredientId" th:value="${ingredient.ingredientId}"/>
+                                    <input type="number" name="quantity" 
+                                           th:value="${ingredient.minStockThreshold - ingredient.stock + 50}" 
+                                           min="1" style="width: 80px;" required/>
+                                    <button type="submit">Reponer</button>
+                                </form>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <a href="/dashboard">Volver al Dashboard Principal</a>
+    </main>
+</div>
+</html>

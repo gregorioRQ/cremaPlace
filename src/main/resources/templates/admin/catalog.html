@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+    <div th:replace="~{layout/main-layout :: layout(~{::mainContent})}">
+        <main th:fragment="mainContent">
+            <h2>Gestión de Catálogo</h2>
+            
+            <div class="nav-links">
+                <a href="/dashboard/admin">← Volver al Panel de Administración</a>
+                <a href="/dashboard/admin/users">Gestión de Usuarios</a>
+                <a href="/dashboard/admin/orders">Control de Pedidos</a>
+                <a href="/dashboard/admin/inventory">Control de Inventario</a>
+            </div>
+            
+            <!-- Gestión Total del Catálogo -->
+            <div class="card">
+                <h3>Gestión del Catálogo de Productos</h3>
+ 
+                <!-- Alfajores -->
+                <h4>Alfajores</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Sabor</th>
+                            <th>Tamaño</th>
+                            <th>Precio</th>
+                            <th>Tiempo Prep. (min)</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="a : ${alfajores}">
+                            <td th:text="${a.id}">a1</td>
+                            <td th:text="${a.sabor}">Chocolate</td>
+                            <td th:text="${a.tamano}">Simple</td>
+                            <td th:text="'$' + ${a.precio}">$10.0</td>
+                            <td th:text="${a.tiempoPreparacion} + ' min'">5 min</td>
+                            <td>
+                                <!-- Formulario de eliminación -->
+                                <form th:action="@{/dashboard/admin/catalog/alfajor/delete}" method="post" style="display: inline-block; margin-right: 5px;">
+                                    <input type="hidden" name="id" th:value="${a.id}"/>
+                                    <button type="submit" class="btn-danger btn-sm">Eliminar</button>
+                                </form>
+                                
+                                <!-- Formulario de actualización -->
+                                <form th:action="@{/dashboard/admin/catalog/alfajor/update}" method="post" style="display: inline-block;">
+                                    <input type="hidden" name="id" th:value="${a.id}"/>
+                                    <input type="text" name="sabor" th:value="${a.sabor}" placeholder="Sabor" required style="width: 100px; margin-right: 5px;">
+                                    <select name="tamano" style="width: 80px; margin-right: 5px;">
+                                        <option value="Simple" th:selected="${a.tamano == 'Simple'}">Simple</option>
+                                        <option value="Triple" th:selected="${a.tamano == 'Triple'}">Triple</option>
+                                    </select>
+                                    <input type="number" step="0.01" name="precio" th:value="${a.precio}" placeholder="Precio" required style="width: 80px; margin-right: 5px;" min="0">
+                                    <input type="number" name="tiempoPreparacion" th:value="${a.tiempoPreparacion}" placeholder="Tiempo" required style="width: 80px;" min="1">
+                                    <button type="submit" class="btn-warning btn-sm">Actualizar</button>
+                                </form>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <form th:action="@{/dashboard/admin/catalog/alfajor/add}" method="post" style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin: 20px 0;">
+                    <strong>Nuevo Alfajor:</strong>
+                    <input type="text" name="sabor" placeholder="Sabor (ej: Maicena)" required/>
+                    <select name="tamano" required>
+                        <option value="Simple">Simple</option>
+                        <option value="Triple">Triple</option>
+                    </select>
+                    <input type="number" step="0.01" name="precio" placeholder="Precio ($)" required min="0"/>
+                    <input type="number" name="tiempoPreparacion" placeholder="Tiempo Prep. (min)" required min="1"/>
+                    <button type="submit" class="btn-success">+ Agregar Alfajor</button>
+                </form>
+
+                <hr style="margin: 20px 0; border: none; border-top: 1px solid #dee2e6;"/>
+ 
+                <!-- Tartas -->
+                <h4>Tartas</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Sabor</th>
+                            <th>Precio Unidad</th>
+                            <th>Precio Mitad (50%)</th>
+                            <th>Tiempo Prep. (min)</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="t : ${tartas}">
+                            <td th:text="${t.id}">t1</td>
+                            <td th:text="${t.sabor}">Frutilla</td>
+                            <td th:text="'$' + ${t.precioUnidad}">$100.0</td>
+                            <td th:text="'$' + (${t.precioUnidad} * 0.5)">$50.0</td>
+                            <td th:text="${t.tiempoPreparacion} + ' min'">30 min</td>
+                            <td>
+                                <!-- Formulario de eliminación -->
+                                <form th:action="@{/dashboard/admin/catalog/tarta/delete}" method="post" style="display: inline-block; margin-right: 5px;">
+                                    <input type="hidden" name="id" th:value="${t.id}"/>
+                                    <button type="submit" class="btn-danger btn-sm">Eliminar</button>
+                                </form>
+                                
+                                <!-- Formulario de actualización -->
+                                <form th:action="@{/dashboard/admin/catalog/tarta/update}" method="post" style="display: inline-block;">
+                                    <input type="hidden" name="id" th:value="${t.id}"/>
+                                    <input type="text" name="sabor" th:value="${t.sabor}" placeholder="Sabor" required style="width: 120px; margin-right: 5px;">
+                                    <input type="number" step="0.01" name="precioUnidad" th:value="${t.precioUnidad}" placeholder="Precio" required style="width: 100px; margin-right: 5px;" min="0">
+                                    <input type="number" name="tiempoPreparacion" th:value="${t.tiempoPreparacion}" placeholder="Tiempo" required style="width: 100px;" min="1">
+                                    <button type="submit" class="btn-warning btn-sm">Actualizar</button>
+                                </form>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <form th:action="@{/dashboard/admin/catalog/tarta/add}" method="post" style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin: 20px 0;">
+                    <strong>Nueva Tarta:</strong>
+                    <input type="text" name="sabor" placeholder="Sabor (ej: Ricota)" required/>
+                    <input type="number" step="0.01" name="precioUnidad" placeholder="Precio Unidad ($)" required min="0"/>
+                    <input type="number" name="tiempoPreparacion" placeholder="Tiempo Prep. (min)" required min="1"/>
+                    <button type="submit" class="btn-success">+ Agregar Tarta</button>
+                </form>
+            </div>
+            
+            <a href="/dashboard">Volver al Dashboard Principal</a>
+        </main>
+    </div>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+    <div th:replace="~{layout/main-layout :: layout(~{::mainContent})}">
+        <main th:fragment="mainContent">
+            <h2>Control de Pedidos</h2>
+            
+            <div class="nav-links">
+                <a href="/dashboard/admin">← Volver al Panel de Administración</a>
+                <a href="/dashboard/admin/users">Gestión de Usuarios</a>
+                <a href="/dashboard/admin/catalog">Gestión de Catálogo</a>
+                <a href="/dashboard/admin/inventory">Control de Inventario</a>
+            </div>
+            
+            <!-- Control de Pedidos -->
+            <div class="card">
+                <h3>Control de Pedidos</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Cliente</th>
+                            <th>Alfajores (IDs)</th>
+                            <th>Tartas (IDs)</th>
+                            <th>Estado Actual</th>
+                            <th>Cambiar Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="p : ${pedidos}">
+                            <td th:text="${p.id}">1</td>
+                            <td th:text="${p.userEmail}">cliente@cremaplace.com</td>
+                            <td th:text="${p.alfajoresIds}">[a1, a1]</td>
+                            <td th:text="${p.tartasIds}">[t1]</td>
+                            <td>
+                                <span class="badge badge-warning" th:text="${p.estado}">Pendiente</span>
+                            </td>
+                            <td>
+                                <form th:action="@{/dashboard/admin/pedidos/updateEstado}" method="post" style="display: flex; gap: 5px;">
+                                    <input type="hidden" name="id" th:value="${p.id}"/>
+                                    <select name="estado">
+                                        <option value="Pendiente" th:selected="${p.estado == 'Pendiente'}">Pendiente</option>
+                                        <option value="Pagado" th:selected="${p.estado == 'Pagado'}">Pagado</option>
+                                        <option value="En Preparación" th:selected="${p.estado == 'En Preparación'}">En Preparación</option>
+                                        <option value="Listo" th:selected="${p.estado == 'Listo'}">Listo</option>
+                                        <option value="Entregado" th:selected="${p.estado == 'Entregado'}">Entregado</option>
+                                    </select>
+                                    <button type="submit">Actualizar</button>
+                                </form>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(pedidos)}">
+                            <td colspan="6" style="text-align: center; color: #6c757d;">No hay pedidos registrados en el sistema.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <a href="/dashboard">Volver al Dashboard Principal</a>
+        </main>
+    </div>
+</body>
+</html>

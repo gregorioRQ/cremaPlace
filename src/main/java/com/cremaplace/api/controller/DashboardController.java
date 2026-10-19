@@ -26,23 +26,11 @@ public class DashboardController {
         this.orderService = orderService;
     }
 
-    @GetMapping("/admin")
-    public String adminDashboard(Model model) {
-        model.addAttribute("role", "ADMIN");
-        model.addAttribute("users", userService.getAllUsers());
-        model.addAttribute("alfajores", catalogService.getAllAlfajores());
-        model.addAttribute("tartas", catalogService.getAllTartas());
-        model.addAttribute("inventory", inventoryService.getAllInventory());
-        model.addAttribute("pedidos", orderService.getAllPedidos());
-        return "dashboard";
-    }
-
     @GetMapping("/stock")
     public String stockDashboard(Model model) {
         model.addAttribute("role", "STOCK_MANAGER");
         return "dashboard";
     }
-
 
     @GetMapping("/user")
     public String userDashboard(Model model) {
@@ -50,4 +38,3 @@ public class DashboardController {
         return "dashboard";
     }
 }
-

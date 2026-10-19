@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+    <div th:replace="~{layout/main-layout :: layout(~{::mainContent})}">
+        <main th:fragment="mainContent">
+            <h2>Gestión de Usuarios</h2>
+            
+            <div class="nav-links">
+                <a href="/dashboard/admin">← Volver al Panel de Administración</a>
+                <a href="/dashboard/admin/catalog">Gestión de Catálogo</a>
+                <a href="/dashboard/admin/orders">Control de Pedidos</a>
+                <a href="/dashboard/admin/inventory">Control de Inventario</a>
+            </div>
+            
+            <!-- Gestión de Usuarios y Roles -->
+            <div class="card">
+                <h3>1. Gestión de Usuarios y Roles</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Usuario</th>
+                            <th>Email</th>
+                            <th>Teléfono</th>
+                            <th>Rol Actual</th>
+                            <th>Estado de Cuenta</th>
+                            <th>Cambiar Rol</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="u : ${users}">
+                            <td th:text="${u.username}">admin</td>
+                            <td th:text="${u.email}">admin@cremaplace.com</td>
+                            <td th:text="${u.phoneNumber}">12345678</td>
+                            <td>
+                                <span class="badge badge-info" th:each="r : ${u.roles}" th:text="${r}">ADMIN</span>
+                            </td>
+                            <td>
+                                <span th:if="${u.failedLoginAttempts >= 8}" class="badge badge-danger">Bloqueada (8+ fallos)</span>
+                                <span th:unless="${u.failedLoginAttempts >= 8}" class="badge badge-success">Activa</span>
+                            </td>
+                            <td>
+                                <form th:action="@{'/dashboard/admin/users/' + ${u.id} + '/role'}" method="post" style="display: flex; gap: 5px;">
+                                    <select name="role">
+                                        <option value="USER" th:selected="${u.roles.contains('USER')}">USER</option>
+                                        <option value="COCINERO" th:selected="${u.roles.contains('COCINERO')}">COCINERO</option>
+                                        <option value="STOCK_MANAGER" th:selected="${u.roles.contains('STOCK_MANAGER')}">STOCK_MANAGER</option>
+                                        <option value="ADMIN" th:selected="${u.roles.contains('ADMIN')}">ADMIN</option>
+                                    </select>
+                                    <button type="submit">Asignar</button>
+                                </form>
+                            </td>
+                            <td>
+                                <form th:if="${u.failedLoginAttempts >= 8}" th:action="@{'/dashboard/admin/users/' + ${u.id} + '/unlock'}" method="post">
+                                    <button type="submit" class="btn-success">Desbloquear</button>
+                                </form>
+                                <span th:unless="${u.failedLoginAttempts >= 8}">-</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <a href="/dashboard">Volver al Dashboard Principal</a>
+        </main>
+    </div>
+</body>
+</html>

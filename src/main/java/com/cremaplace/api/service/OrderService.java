@@ -1,6 +1,10 @@
 package com.cremaplace.api.service;
 
+import com.cremaplace.api.model.Alfajor;
+import com.cremaplace.api.model.Ingredient;
 import com.cremaplace.api.model.Pedido;
+import com.cremaplace.api.model.RecipeIngredient;
+import com.cremaplace.api.model.Tarta;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -11,9 +15,15 @@ import java.util.stream.Collectors;
 public class OrderService {
     private final List<Pedido> pedidos = new ArrayList<>();
     private final CatalogService catalogService;
+    private final IngredientService ingredientService;
+    private final RecipeService recipeService;
 
-    public OrderService(CatalogService catalogService) {
+    public OrderService(CatalogService catalogService, 
+                        IngredientService ingredientService,
+                        RecipeService recipeService) {
         this.catalogService = catalogService;
+        this.ingredientService = ingredientService;
+        this.recipeService = recipeService;
     }
 
     public void createOrder(String userEmail, List<String> alfajoresIds, List<String> tartasIds) {
@@ -58,23 +68,61 @@ public class OrderService {
 
     public void completarPedido(String id) {
         updateEstado(id, "Listo");
+        // Deduct ingredients when order is completed
+        deductIngredientsForOrder(id);
+    }
+    
+    private void deductIngredientsForOrder(String orderId) {
+        // Find the order
+        Pedido pedido = pedidos.stream()
+                .filter(p -> p.getId().equals(orderId))
+                .findFirst()
+                .orElse(null);
+        
+        if (pedido == null) {
+            return;
+        }
+        
+        // Deduct ingredients for alfajores
+        for (String alfajorId : pedido.getAlfajoresIds()) {
+            deductIngredientsForProduct(alfajorId, 1); // 1 unit of each alfajor
+        }
+        
+        // Deduct ingredients for tartas
+        for (String tartaId : pedido.getTartasIds()) {
+            deductIngredientsForProduct(tartaId, 1); // 1 unit of each tarta
+        }
+    }
+    
+    private void deductIngredientsForProduct(String productId, int quantity) {
+        List<RecipeIngredient> recipe = recipeService.getRecipeForProduct(productId);
+        for (RecipeIngredient recipeIngredient : recipe) {
+            int totalQuantityNeeded = recipeIngredient.getQuantity() * quantity;
+            ingredientService.useIngredient(recipeIngredient.getIngredientId(), totalQuantityNeeded);
+        }
     }
 
     private int calculateSuggestedTime(List<String> alfajoresIds, List<String> tartasIds) {
         int alfajoresTime = alfajoresIds.stream()
-            .mapToInt(id -> catalogService.getAllAlfajores().stream()
-                .filter(a -> a.getId().equals(id))
-                .findFirst()
-                .map(a -> a.getTiempoPreparacion())
-                .orElse(0))
+            .mapToInt(id -> {
+                for (Alfajor a : catalogService.getAllAlfajores()) {
+                    if (a.getId().equals(id)) {
+                        return a.getTiempoPreparacion();
+                    }
+                }
+                return 0;
+            })
             .sum();
         
         int tartasTime = tartasIds.stream()
-            .mapToInt(id -> catalogService.getAllTartas().stream()
-                .filter(t -> t.getId().equals(id))
-                .findFirst()
-                .map(t -> t.getTiempoPreparacion())
-                .orElse(0))
+            .mapToInt(id -> {
+                for (Tarta t : catalogService.getAllTartas()) {
+                    if (t.getId().equals(id)) {
+                        return t.getTiempoPreparacion();
+                    }
+                }
+                return 0;
+            })
             .sum();
         
         return alfajoresTime + tartasTime;
