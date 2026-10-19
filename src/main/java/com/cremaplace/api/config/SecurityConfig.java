@@ -32,7 +32,7 @@ public class SecurityConfig {
                  .requestMatchers("/dashboard/admin/**").hasRole("ADMIN")
                  .requestMatchers("/dashboard/stock/**").hasRole("STOCK_MANAGER")
                  .requestMatchers("/dashboard/cocinero/**").hasRole("COCINERO")
-                 .requestMatchers("/dashboard/sin-rol").hasRole("USER")
+                  .requestMatchers("/dashboard/cliente").hasRole("USER")
                  .anyRequest().authenticated()
              )
             .formLogin(form -> form

@@ -98,8 +98,8 @@
     - Duración de sesión: 30 minutos de inactividad.
     - Bloqueo de cuenta: Tras 8 intentos fallidos consecutivos.
 - **Asignación de Rol Inicial:**
-    - Usuarios registrados reciben solo rol `USER` por defecto.
-    - Al hacer login, son redirigidos a `/dashboard/sin-rol` con mensaje informativo.
+    - Usuarios registrados reciben rol `USER` (CLIENTE) por defecto.
+    - Al hacer login, acceden a `/dashboard/cliente` para ver el catálogo de productos.
     - Solo un `ADMIN` puede asignar roles funcionales (`COCINERO`, `STOCK_MANAGER`, `ADMIN`) desde `/dashboard/admin/users`.
     - Una vez asignado rol funcional, el usuario accede a su dashboard correspondiente en siguiente login.
 
