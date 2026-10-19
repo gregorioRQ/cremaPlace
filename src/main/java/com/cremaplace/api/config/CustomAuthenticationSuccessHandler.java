@@ -33,7 +33,8 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         } else if (authorities.contains("ROLE_COCINERO")) {
             return "/dashboard/cocinero";
         } else {
-            return "/dashboard/user";
+            // Solo ROLE_USER (sin roles funcionales adicionales)
+            return "/dashboard/sin-rol";
         }
     }
 }

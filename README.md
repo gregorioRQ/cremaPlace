@@ -16,7 +16,7 @@ CremaPlace es una aplicación web diseñada para gestionar el catálogo de produ
 
 ## Arquitectura de Seguridad
 - **Bootstrap de Administrador:** El primer usuario registrado obtiene automáticamente el rol `ADMIN` de forma atómica y segura mediante transacciones de MongoDB (`@Transactional`), evitando condiciones de carrera (*race conditions*).
-- **Redirección Inteligente Post-Login:** Implementación de `CustomAuthenticationSuccessHandler` para dirigir automáticamente al usuario a su área correspondiente (`/dashboard/admin`, `/dashboard/user`, etc.) inmediatamente después de autenticarse con éxito.
+- **Redirección Inteligente Post-Login:** Implementación de `CustomAuthenticationSuccessHandler` para dirigir automáticamente al usuario a su área correspondiente (`/dashboard/admin`, `/dashboard/sin-rol`, etc.) inmediatamente después de autenticarse con éxito.
 - **Protección Estricta de Rutas:** Configuración en `SecurityConfig` que restringe el acceso a nivel de URL (ej. `/dashboard/admin/**` requiere `ROLE_ADMIN`), impidiendo que los usuarios accedan de manera manual a paneles que no les corresponden.
 - **Dashboard Modular:** Vistas unificadas con fragmentos dinámicos de Thymeleaf cargados según el rol validado por el servidor.
 
@@ -24,7 +24,7 @@ CremaPlace es una aplicación web diseñada para gestionar el catálogo de produ
 Para más detalles, consultar el archivo `docs/BUSINESS_RULES.md`.
 
 ## Roles
-- **USER:** Cliente (Gestión de pedidos propios).
+- **USER:** Sin rol asignado (pendiente asignación por ADMIN).
 - **COCINERO:** Producción y gestión de tiempos de preparación.
 - **STOCK_MANAGER:** Gestión de inventario y compras.
 - **ADMIN:** Gestión total del sistema.

@@ -28,13 +28,13 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/login", "/register", "/css/**", "/js/**").permitAll()
-                .requestMatchers("/dashboard/admin/**").hasRole("ADMIN")
-                .requestMatchers("/dashboard/stock/**").hasRole("STOCK_MANAGER")
-                .requestMatchers("/dashboard/cocinero/**").hasRole("COCINERO")
-                .requestMatchers("/dashboard/user/**").hasRole("USER")
-                .anyRequest().authenticated()
-            )
+                 .requestMatchers("/login", "/register", "/css/**", "/js/**").permitAll()
+                 .requestMatchers("/dashboard/admin/**").hasRole("ADMIN")
+                 .requestMatchers("/dashboard/stock/**").hasRole("STOCK_MANAGER")
+                 .requestMatchers("/dashboard/cocinero/**").hasRole("COCINERO")
+                 .requestMatchers("/dashboard/sin-rol").hasRole("USER")
+                 .anyRequest().authenticated()
+             )
             .formLogin(form -> form
                 .loginPage("/login")
                 .successHandler(successHandler)

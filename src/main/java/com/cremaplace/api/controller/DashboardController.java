@@ -26,15 +26,8 @@ public class DashboardController {
         this.orderService = orderService;
     }
 
-    @GetMapping("/stock")
-    public String stockDashboard(Model model) {
-        model.addAttribute("role", "STOCK_MANAGER");
-        return "dashboard";
-    }
-
-    @GetMapping("/user")
-    public String userDashboard(Model model) {
-        model.addAttribute("role", "USER");
-        return "dashboard";
+    @GetMapping("/sin-rol")
+    public String sinRol() {
+        return "sin-rol";
     }
 }
