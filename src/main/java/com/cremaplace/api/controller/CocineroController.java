@@ -1,7 +1,9 @@
 package com.cremaplace.api.controller;
 
+import com.cremaplace.api.model.Pedido;
 import com.cremaplace.api.service.OrderService;
 import com.cremaplace.api.service.CatalogService;
+import java.util.List;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,21 +25,42 @@ public class CocineroController {
     @GetMapping
     public String dashboard(Model model) {
         model.addAttribute("role", "COCINERO");
-        model.addAttribute("pedidos", orderService.getPedidosParaCocina());
-        model.addAttribute("alfajores", catalogService.getAllAlfajores());
-        model.addAttribute("tartas", catalogService.getAllTartas());
+        List<Pedido> pedidos = orderService.getPedidosParaCocina();
+        // Calculate stock warnings for each pedido
+        for (Pedido pedido : pedidos) {
+            pedido.setStockWarning(orderService.hasStockWarning(pedido.getId()));
+        }
+        model.addAttribute("pedidos", pedidos);
         return "cocinero";
     }
 
-    @PostMapping("/pedidos/iniciar")
-    public String iniciarPreparacion(@RequestParam String id, @RequestParam(defaultValue = "0") int tiempoEstimado) {
+    @GetMapping("/pedidos/{id}/detalle")
+    public String detallePedido(@PathVariable String id, Model model) {
+        Pedido pedido = orderService.getOrderDetail(id);
+        if (pedido == null) {
+            return "redirect:/dashboard/cocinero";
+        }
+        model.addAttribute("pedido", pedido);
+        // Ingredientes consolidados para la vista de detalle
+        model.addAttribute("ingredientesNecesarios", orderService.getConsolidatedIngredients(id));
+        return "pedido-detalle";
+    }
+
+    @PostMapping("/pedidos/{id}/iniciar")
+    public String iniciarPreparacion(@PathVariable String id, @RequestParam int tiempoEstimado) {
         orderService.iniciarPreparacion(id, tiempoEstimado);
         return "redirect:/dashboard/cocinero";
     }
 
-    @PostMapping("/pedidos/completar")
-    public String completarPedido(@RequestParam String id) {
-        orderService.completarPedido(id);
+    @PostMapping("/pedidos/{id}/terminar")
+    public String terminarPreparacion(@PathVariable String id) {
+        orderService.terminarPreparacion(id);
+        return "redirect:/dashboard/cocinero";
+    }
+
+    @PostMapping("/pedidos/{id}/cancelar")
+    public String cancelarPedido(@PathVariable String id, @RequestParam String motivo) {
+        orderService.cancelarPedido(id, motivo);
         return "redirect:/dashboard/cocinero";
     }
 }

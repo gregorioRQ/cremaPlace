@@ -21,6 +21,14 @@ public class CatalogService {
     public Iterable<Alfajor> getAllAlfajores() { return alfajorRepository.findAll(); }
     public Iterable<Tarta> getAllTartas() { return tartaRepository.findAll(); }
 
+    public Alfajor getAlfajorById(String id) {
+        return alfajorRepository.findById(id).orElse(null);
+    }
+
+    public Tarta getTartaById(String id) {
+        return tartaRepository.findById(id).orElse(null);
+    }
+
     public void addAlfajor(String sabor, String tamano, double precio, int tiempoPreparacion) {
         Alfajor alfajor = new Alfajor(null, sabor, tamano, precio, tiempoPreparacion);
         Alfajor savedAlfajor = alfajorRepository.save(alfajor);

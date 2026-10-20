@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Detalle Pedido - CremaPlace</title>
+    <link rel="stylesheet" href="/css/main.css" th:href="@{/css/main.css}">
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 20px; }
+        .container { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); max-width: 800px; margin: 20px auto; }
+        h1, h2, h3 { color: #333; }
+        .badge { display: inline-block; padding: 3px 7px; font-size: 0.75em; font-weight: bold; border-radius: 3px; }
+        .badge-info { background:#17a2b8; color:#fff; }
+        .badge-warning { background:#ffc107; color:#212529; }
+        .badge-success { background:#28a745; color:#fff; }
+        .badge-danger { background:#dc3545; color:#fff; }
+        .badge-secondary { background:#6c757d; color:#fff; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+        th, td { padding: 8px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background-color: #f2f2f2; }
+        .alert { padding: 10px; margin: 10px 0; border-radius: 4px; }
+        .alert-info { background:#d1ecf1; border-color:#bee5eb; color:#0c5460; }
+        .alert-warning { background:#fff3cd; border-color:#ffeeba; color:#856404; }
+        .actions { margin-top: 20px; }
+        .actions button, .actions a.btn { margin-right: 10px; }
+        .order-items { margin-top: 15px; }
+        .order-items ul { list-style: none; padding: 0; }
+        .order-items li { background:#f8f9fa; padding:8px; margin-bottom:5px; border-radius:4px; }
+    </style>
+</head>
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+
+<div class="container">
+    <h1>Pedido #<span th:text="${pedido.id}"></span></h1>
+    <p>
+        <strong>Cliente:</strong> <span th:text="${pedido.clienteNombre}"></span><br/>
+        <strong>Fecha:</strong> <span th:text="${#dates.format(pedido.fechaCreacion, 'dd-MM-yyyy HH:mm')}"></span><br/>
+        <strong>Total:</strong> <span th:text="${#numbers.formatCurrency(pedido.total)}"></span><br/>
+        <strong>Estado:</strong> 
+        <span class="badge" 
+              th:class="${pedido.estado == 'PAGADO' ? 'badge-warning' 
+                         : pedido.estado == 'En Preparación' ? 'badge-info'
+                         : pedido.estado == 'Listo' ? 'badge-success'
+                         : pedido.estado == 'Cancelado' ? 'badge-danger'
+                         : 'badge-secondary'}"
+              th:text="${pedido.estado}"></span>
+    </p>
+
+    <!-- Tiempo estimado (editable solo si PAGADO) -->
+    <div th:if="${pedido.estado == 'PAGADO'}" class="mb-3">
+        <label for="tiempoEstimado">Tiempo estimado de preparación (min):</label>
+        <input type="number" id="tiempoEstimado" name="tiempoEstimado" 
+               th:value="${pedido.tiempoEstimadoMinutos}" min="1" class="form-control" style="width:150px;"/>
+        <button type="submit" class="btn btn-primary ml-2" 
+                th:onclick="|document.getElementById('tiempoForm').submit();|">
+            Actualizar Tiempo
+        </button>
+        <form id="tiempoForm" method="post" th:action="@{/dashboard/cocinero/pedidos/{id}/iniciar(id=${pedido.id})}" style="display:none;">
+            <input type="number" name="tiempoEstimado" th:value="${pedido.tiempoEstimadoMinutos}" min="1"/>
+        </form>
+    </div>
+
+    <!-- Advertencia de stock -->
+    <div th:if="${pedido.stockWarning}" class="alert alert-warning">
+        ⚠ Advertencia: Algunos ingredientes tienen stock insuficiente. Puede continuar, pero el STOCK_MANAGER deberá reponer.
+    </div>
+
+    <!-- Ingredientes Consolidados -->
+    <h2>Ingredientes Requeridos</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Ingrediente</th>
+                <th>Cantidad Requerida</th>
+                <th>Stock Actual</th>
+                <th>Estado</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="entry : ${ingredientesNecesarios}">
+                <td th:text="${entry.key.nombre}"></td>
+                <td th:text="${entry.value} g"></td>
+                <td th:text="${ingredientService.getIngredientById(entry.key.id).stock} g"></td>
+                <td>
+                    <span class="badge" 
+                          th:class="${ingredientService.getIngredientById(entry.key.id).stock >= entry.value ? 'badge-success' : 'badge-danger'}"
+                          th:text="${ingredientService.getIngredientById(entry.key.id).stock >= entry.value ? 'SUFICIENTE' : 'INSUFICIENTE'}"></span>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Items del pedido -->
+    <h2>Productos</h2>
+    <div class="order-items">
+        <ul>
+            <li th:each="item : ${pedido.items}">
+                <span th:text="${item.nombre}"></span> 
+                (<span th:text="${item.cantidad}"></span> x 
+                <span th:text="${#numbers.formatCurrency(item.precioUnitario)}"></span>) =
+                <span th:text="${#numbers.formatCurrency(item.precioUnitario * item.cantidad)}"></span>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Acciones según estado -->
+    <div class="actions">
+        <!-- COMENZAR (solo si PAGADO) -->
+        <form th:if="${pedido.estado == 'PAGADO'}" method="post" 
+              th:action="@{/dashboard/cocinero/pedidos/{id}/iniciar(id=${pedido.id})}">
+            <label>Tiempo estimado (min):</label>
+            <input type="number" name="tiempoEstimado" 
+                   th:value="${pedido.tiempoEstimadoMinutos}" min="1" style="width:80px;"/>
+            <button type="submit" class="btn btn-success">COMENZAR</button>
+        </form>
+
+        <!-- TERMINAR (solo si EN PREPARACION) -->
+        <form th:if="${pedido.estado == 'En Preparación'}" method="post" 
+              th:action="@{/dashboard/cocinero/pedidos/{id}/terminar(id=${pedido.id})}">
+            <button type="submit" class="btn btn-primary">TERMINAR</button>
+        </form>
+
+        <!-- SALTEAR (cancelar) - siempre disponible excepto si ya cancelado/listo/entregado -->
+        <form th:if="${!(pedido.estado == 'Listo' || pedido.estado == 'Entregado' || pedido.estado == 'Cancelado')}" method="post"
+              th:action="@{/dashboard/cocinero/pedidos/{id}/cancelar(id=${pedido.id})}">
+            <input type="text" name="motivo" placeholder="Motivo (opcional)" style="width:200px;"/>
+            <button type="submit" class="btn btn-danger">SALTEAR</button>
+        </form>
+    </div>
+
+    <a href="/dashboard/cocinero" class="btn btn-secondary mt-3">← Volver a la lista</a>
+</div>
+
+</body>
+</html>

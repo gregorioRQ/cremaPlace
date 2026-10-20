@@ -14,14 +14,17 @@
 ## 2. Pedidos
 - **Mínimo de compra:** Obligatorio 2 Alfajores (tamaño Simple) Y 1 Tarta (porción Mitad) del sabor elegido.
 - **Validación de Stock:** Estricta al confirmar el pedido.
-- **Estados:** Pendiente, Pagado, En Preparación, Listo, Entregado.
+- **Estados:** Pendiente, Pagado, En Preparación, Listo, Entregado, Cancelado.
 - **Gestión de Estados:** 
-  - `USER`: Actualiza a "Pagado" (subir comprobante), puede cancelar si está "Pendiente" o "Pagado".
-  - `COCINERO`: Actualiza a "En preparación" y "Listo".
+  - `USER`: Actualiza a "Pagado" (subir comprobante), puede cancelar si está "Pendiente" o "Pagado" (stock restituido).
+  - `COCINERO`: 
+    * `COMENZAR`: PAGADO → EN_PREPARACION (deduce ingredientes según recetas + establece tiempo estimado).
+    * `TERMINAR`: EN_PREPARACION → LISTO (solo cambia estado, stock ya deducido).
+    * `SALTEAR`: CANCELADO (registra motivo opcional, **no** restaura stock).
 - **Estimación de tiempo:** 
-  - Sugerencia automática al confirmar (Suma tiempos base).
-  - Ajuste manual opcional por el `COCINERO` al iniciar preparación.
-- **Cancelación:** Si el `USER` cancela (Pendiente/Pagado), el stock se restituye automáticamente.
+  - Sugerencia automática al confirmar (suma tiempos base de productos).
+  - Ajuste manual obligatorio por el `COCINERO` al iniciar preparación (input visible en tarjeta y detalle).
+- **Cancelación por USUARIO:** Si el `USER` cancela (Pendiente/Pagado), el stock se restituye automáticamente.
 
 ## 3. Inventario
 - Si el stock llega a 0, se deshabilita la venta de ese producto/variante específico hasta reponer stock.
@@ -35,13 +38,14 @@
 
  
 | Acción | USER | COCINERO | STOCK_MANAGER | ADMIN (JEFE) |
-| :--- | :---: | :---: | :---: | :---: |
+|:---|:---:|:---:|:---:|:---:|
 | **Catálogo** | Ver | Ver | Ver/Editar | Total |
-| **Pedidos** | Crear/Ver propios | Ver pagados | Ver necesidades | Total |
-| **Estado Pedido** | Pagado | En prep/Listo | - | Total |
-| **Cancelar Pedido** | Si (Pend/Pagado) | - | - | Total |
-| **Estimar tiempo** | - | Si (Al preparar) | - | Total |
-| **Inventario** | - | - | Ver/Editar | Total |
+| **Pedidos** | Crear/Ver propios | Ver pagados y en preparación (con detalle) | Ver necesidades | Total |
+| **Estado Pedido** | Pagado | En prep/Listo/Cancelado | - | Total |
+| **Cancelar Pedido** | Si (Pend/Pagado) | Sí (con motivo) | - | Total |
+| **Estimar tiempo** | - | Sí (input visible) | - | Total |
+| **Ver detalle pedido + receta** | - | Sí | - | Total |
+| **Inventario** | - | - | Ver/Editar/Reponer | Total |
 | **Gestión de Ingredientes** | - | - | Ver/Editar/Reponer | Total |
 | **Compras/Proveedores** | - | - | Total | Total |
 | **Usuarios** | Solo propio perfil | - | - | Total |
@@ -76,9 +80,12 @@
 ## 7. Roles y Responsabilidades Actualizadas
 
 ### 7.1. Rol COCINERO
-- Preparar los pedidos marcándolos como "En preparación" y posteriormente "Listo" al finalizar.
-- **Nueva responsabilidad:** Al marcar un pedido como "Listo", el sistema deduce automáticamente las materias primas según las recetas asociadas.
-- No necesita intervenir en la gestión de materias primas, pero debe asegurar que los pedidos se completen correctamente para que se active el proceso de deducción.
+- Preparar los pedidos mediante las acciones **COMENZAR**, **TERMINAR** y **SALTEAR**.
+- **COMENZAR**: Cambia el estado de "Pagado" a "En preparación", deduce inmediatamente los ingredientes según las recetas asociadas y registra el tiempo estimado de preparación (input obligatorio).
+- **TERMINAR**: Cambia el estado de "En preparación" a "Listo" (stock ya fue deducido en COMENZAR).
+- **SALTEAR**: Cancela el pedido con un motivo opcional, sin restaurar el stock ya deducido (si corresponde).
+- Debe asegurar que los pedidos se completen correctamente para que se active el proceso de deducción automática de materias primas al pasar a "Listo".
+- Puede ver el detalle de cada pedido incluyendo la receta consolidada y el stock disponible de cada ingrediente.
 
 ### 7.2. Rol STOCK_MANAGER
 - Monitorear el inventario de materias primas mediante su panel en `/dashboard/stock`.
