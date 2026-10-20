@@ -35,8 +35,9 @@ public class AdminController {
 
     // User management page
     @GetMapping("/users")
-    public String manageUsers(Model model) {
-        model.addAttribute("users", userService.getAllUsers());
+    public String manageUsers(Model model, @RequestParam(required = false) String search) {
+        model.addAttribute("users", userService.searchUsersByUsername(search));
+        model.addAttribute("search", search);
         return "admin/users";
     }
 

@@ -4,7 +4,6 @@ import com.cremaplace.api.model.User;
 import com.cremaplace.api.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -20,9 +19,16 @@ public class UserService {
         return userRepository.findAll();
     }
 
+    public List<User> searchUsersByUsername(String username) {
+        if (username == null || username.trim().isEmpty()) {
+            return getAllUsers();
+        }
+        return userRepository.findByUsernameContainingIgnoreCase(username.trim());
+    }
+
     public void updateUserRole(String userId, String newRole) {
         userRepository.findById(userId).ifPresent(user -> {
-            user.setRoles(Collections.singletonList(newRole));
+            user.setRoles(java.util.Collections.singletonList(newRole));
             userRepository.save(user);
         });
     }

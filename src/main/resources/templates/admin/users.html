@@ -11,6 +11,14 @@
                 <a href="/dashboard/admin/orders">Control de Pedidos</a>
                 <a href="/dashboard/admin/inventory">Control de Inventario</a>
             </div>
+
+            <!-- Buscar usuarios -->
+            <form method="get" style="margin: 20px 0; display: flex; gap: 10px; align-items: center;">
+                <input type="text" name="search" placeholder="Buscar por username..." 
+                       th:value="${search}" style="padding: 8px; width: 300px;"/>
+                <button type="submit" class="btn-primary">Buscar</button>
+                <a href="/dashboard/admin/users" class="btn-secondary" th:if="${search != null and !search.isEmpty()}">Limpiar</a>
+            </form>
             
             <!-- Gestión de Usuarios y Roles -->
             <div class="card">
