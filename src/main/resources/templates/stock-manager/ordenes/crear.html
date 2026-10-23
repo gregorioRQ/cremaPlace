@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<div th:replace="~{layout/main-layout :: layout(~{::mainContent})}">
+    <main th:fragment="mainContent">
+        <h2>Nueva Orden de Compra</h2>
+        
+        <div class="nav-links">
+            <a href="/dashboard/stock/ordenes">← Lista de Órdenes</a>
+            <a href="/dashboard/stock">Panel de Stock</a>
+            <a href="/dashboard/admin">Panel de Administración</a>
+        </div>
+        
+        <div class="card">
+            <h3>Crear Orden de Compra</h3>
+            <form th:action="@{/dashboard/stock/ordenes}" method="post">
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label for="proveedorId" class="form-label">Proveedor:</label>
+                        <select id="proveedorId" name="proveedorId" class="form-select" required>
+                            <option value="">Seleccione un proveedor</option>
+                            <option th:each="prov : ${proveedores}"
+                                    th:value="${prov.id}"
+                                    th:text="${prov.nombre}">
+                                Seleccione un proveedor
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="fecha" class="form-label">Fecha:</label>
+                        <input type="datetime-local" id="fecha" name="fecha" class="form-control" required>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <h4>Items de la Orden</h4>
+                <div id="itemsContainer">
+                    <div class="item-row row mb-2" data-index="0">
+                        <div class="col-md-4">
+                            <label class="form-label">Ingrediente:</label>
+                            <input type="text" class="form-control" list="ingredientesDisponibles" 
+                                   name="items[0].ingredienteId" placeholder="Ej: harina, azucar, chocolate" required>
+                            <datalist id="ingredientesDisponibles">
+                                <option th:each="ingId : ${ingredientesDisponibles}" th:value="${ingId}"></option>
+                            </datalist>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Cantidad Solicitada:</label>
+                            <input type="number" class="form-control" name="items[0].cantidadSolicitada" min="1" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Precio Unitario ($):</label>
+                            <input type="number" class="form-control" name="items[0].precioUnitario" step="0.01" min="0" required>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">&nbsp;</label><br>
+                            <button type="button" class="btn btn-outline-danger btn-sm" onclick="eliminarFila(this)" 
+                                    th:if="${false}"> <!-- Solo mostrar si hay más de una fila -->
+                                Eliminar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-3">
+                    <button type="button" class="btn btn-success" onclick="añadirFila()">
+                        + Añadir Otro Item
+                    </button>
+                </div>
+                
+                <hr>
+                
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <a href="/dashboard/stock/ordenes" class="btn btn-secondary me-md-2">Cancelar</a>
+                    <button type="submit" class="btn btn-primary">Crear Orden</button>
+                </div>
+            </form>
+        </div>
+        
+        <a href="/dashboard">Volver al Dashboard Principal</a>
+    </main>
+</div>
+</html>
+<script>
+    let itemIndex = 1;
+    
+    function añadirFila() {
+        const container = document.getElementById('itemsContainer');
+        const filaHTML = `
+            <div class="item-row row mb-2" data-index="${itemIndex}">
+                <div class="col-md-4">
+                    <label class="form-label">Ingrediente:</label>
+                    <input type="text" class="form-control" list="ingredientesDisponibles" 
+                           name="items[${itemIndex}].ingredienteId" placeholder="Ej: harina, azucar, chocolate" required>
+                    <datalist id="ingredientesDisponibles">
+                        <!-- Las opciones se compartirán con la primera fila -->
+                    </datalist>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Cantidad Solicitada:</label>
+                    <input type="number" class="form-control" name="items[${itemIndex}].cantidadSolicitada" min="1" required>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Precio Unitario ($):</label>
+                    <input type="number" class="form-control" name="items[${itemIndex}].precioUnitario" step="0.01" min="0" required>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">&nbsp;</label><br>
+                    <button type="button" class="btn btn-outline-danger btn-sm" onclick="eliminarFila(this)">
+                        Eliminar
+                    </button>
+                </div>
+            </div>
+        `;
+        container.insertAdjacentHTML('beforeend', filaHTML);
+        itemIndex++;
+    }
+    
+    function eliminarFila(button) {
+        // No permitir eliminar la última fila
+        const filas = document.querySelectorAll('.item-row');
+        if (filas.length <= 1) {
+            alert('Debe mantener al menos un item en la orden');
+            return;
+        }
+        button.closest('.item-row').remove();
+        // Reindexar los elementos para mantener nombres consistentes
+        document.querySelectorAll('.item-row').forEach((fila, index) => {
+            fila.dataset.index = index;
+            fila.querySelectorAll('input[name]').forEach(input => {
+                const name = input.name.replace(/\[\d+\]/, `[${index}]`);
+                input.name = name;
+            });
+        });
+        itemIndex = document.querySelectorAll('.item-row').length;
+    }
+</script>

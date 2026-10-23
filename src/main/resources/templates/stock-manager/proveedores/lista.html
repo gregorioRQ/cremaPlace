@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<div th:replace="~{layout/main-layout :: layout(~{::mainContent})}">
+    <main th:fragment="mainContent">
+        <h2>Gestión de Proveedores</h2>
+        
+        <div class="nav-links">
+            <a href="/dashboard/stock">← Panel de Stock</a>
+            <a href="/dashboard/stock/ordenes">Órdenes de Compra</a>
+            <a href="/dashboard/admin">Panel de Administración</a>
+        </div>
+        
+        <div th:if="${proveedores.isEmpty()}" class="alert alert-info">
+            No hay proveedores registrados en el sistema.
+        </div>
+        
+        <div th:unless="${proveedores.isEmpty()}">
+            <div class="card">
+                <h3>Lista de Proveedores</h3>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Contacto</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="proveedor : ${proveedores}">
+                            <td th:text="${proveedor.id}">PROV001</td>
+                            <td th:text="${proveedor.nombre}">Nombre Proveedor</td>
+                            <td th:text="${proveedor.contacto}">contacto@ejemplo.com</td>
+                            <td>
+                                <span th:if="${proveedor.activo}" class="badge badge-success">Activo</span>
+                                <span th:unless="${proveedor.activo}" class="badge badge-secondary">Inactivo</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <a href="/dashboard">Volver al Dashboard Principal</a>
+    </main>
+</div>
+</html>

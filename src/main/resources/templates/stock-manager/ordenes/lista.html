@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<div th:replace="~{layout/main-layout :: layout(~{::mainContent})}">
+    <main th:fragment="mainContent">
+        <h2>Órdenes de Compra</h2>
+        
+        <div class="nav-links">
+            <a href="/dashboard/stock">← Panel de Stock</a>
+            <a href="/dashboard/stock/nuevo">Nueva Orden</a>
+            <a href="/dashboard/stock/proveedores">Proveedores</a>
+            <a href="/dashboard/admin">Panel de Administración</a>
+        </div>
+        
+        <div th:if="${ordenes.isEmpty()}" class="alert alert-info">
+            No hay órdenes de compra registradas.
+        </div>
+        
+        <div th:unless="${ordenes.isEmpty()}">
+            <div class="card">
+                <h3>Lista de Órdenes de Compra</h3>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Número Orden</th>
+                            <th>Proveedor</th>
+                            <th>Fecha</th>
+                            <th>Estado</th>
+                            <th>Total ($)</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="orden : ${ordenes}">
+                            <td th:text="${orden.numeroOrden}">OC-0001</td>
+                            <td>
+                                <!-- En una implementación real, cargaríamos el nombre del proveedor -->
+                                <span th:text="${orden.proveedorId}">PROV_ID</span>
+                            </td>
+                            <td th:text="${#dates.format(orden.fecha, 'dd/MM/yyyy HH:mm')}">01/01/2026 10:30</td>
+                            <td>
+                                <span th:class="${orden.estado == 'BORRADOR'} ? 'badge badge-warning' : 
+                                        ${orden.estado == 'ENVIADA'} ? 'badge badge-info' : 
+                                        ${orden.estado == 'PARCIAL'} ? 'badge badge-primary' : 
+                                        ${orden.estado == 'COMPLETADA'} ? 'badge badge-success' : 
+                                        'badge badge-danger'"
+                                      th:text="${orden.estado}">ENVIADA</span>
+                            </td>
+                            <td th:text="${orden.total}">150.00</td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a th:href="@{/dashboard/stock/ordenes/{id}(id=${orden.id})}" 
+                                       class="btn btn-sm btn-outline-primary">Detalle</a>
+                                    <a th:href="@{/dashboard/stock/ordenes/{id}/enviar}(id=${orden.id})" 
+                                       class="btn btn-sm btn-outline-success"
+                                       th:if="${orden.estado == 'BORRADOR'}">Enviar</a>
+                                    <a th:href="@{/dashboard/stock/ordenes/{id}/cancelar}(id=${orden.id})" 
+                                       class="btn btn-sm btn-outline-danger"
+                                       th:if="${orden.estado == 'BORRADOR' || orden.estado == 'ENVIADA'}">Cancelar</a>
+                                    <a th:href="@{/dashboard/stock/recepciones/nuevo/{id}(id=${orden.id})}" 
+                                       class="btn btn-sm btn-outline-info"
+                                       th:if="${orden.estado == 'ENVIADA' || orden.estado == 'PARCIAL'}">Registrar Recepción</a>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <a href="/dashboard">Volver al Dashboard Principal</a>
+    </main>
+</div>
+</html>

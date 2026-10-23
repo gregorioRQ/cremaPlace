@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<div th:replace="~{layout/main-layout :: layout(~{::mainContent})}">
+    <main th:fragment="mainContent">
+        <h2>Registro de Recepción de Mercancía</h2>
+        
+        <div class="nav-links">
+            <a href="/dashboard/stock/ordenes">← Órdenes de Compra</a>
+            <a href="/dashboard/stock">Panel de Stock</a>
+            <a href="/dashboard/admin">Panel de Administración</a>
+        </div>
+        
+        <div class="card">
+            <h3>Recepción para Orden: <span th:text="${orden.numeroOrden}">OC-0001</span></h3>
+            <p><strong>Fecha Orden:</strong> <span th:text="${#dates.format(orden.fecha, 'dd/MM/yyyy HH:mm')}">01/01/2026 10:30</span></p>
+            <p><strong>Proveedor:</strong> <span th:text="${orden.proveedorId}">PROV001</span></p>
+            <p><strong>Estado Actual:</strong> 
+                <span th:class="${orden.estado == 'ENVIADA'} ? 'badge badge-info' : 
+                        ${orden.estado == 'PARCIAL'} ? 'badge badge-primary' : 
+                        'badge badge-secondary'"
+                   th:text="${orden.estado}">ENVIADA</span>
+            </p>
+        </div>
+        
+        <div class="card">
+            <h3>Registrar Items Recibidos</h3>
+            <form th:action="@{/dashboard/stock/recepciones}" method="post">
+                <input type="hidden" name="ordenCompraId" th:value="${orden.id}">
+                <input type="hidden" name="fechaRecepcion" th:value="${#dates.format(now, 'yyyy-MM-dd\'T\'HH:mm')}"/>
+                
+                <div th:if="${orden.items.isEmpty()}" class="alert alert-warning">
+                    Esta orden no tiene items para recibir.
+                </div>
+                
+                <div th:unless="${orden.items.isEmpty()}">
+                    <div id="recepcionItemsContainer">
+                        <div th:each="item, itemStat : ${orden.items}" class="item-row row mb-3">
+                            <div class="col-md-4">
+                                <label class="form-label">Ingrediente:</label>
+                                <input type="text" class="form-control" 
+                                       value="${item.ingredienteId}" readonly>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Cantidad Solicitada:</label>
+                                <input type="number" class="form-control" 
+                                       value="${item.cantidadSolicitada}" readonly>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Cantidad a Recibir:</label>
+                                <input type="number" class="form-control" 
+                                       name="itemsRecibidos[${itemStat.index}].ingredienteId" 
+                                       value="${item.ingredienteId}" hidden>
+                                <input type="number" class="form-control" 
+                                       name="itemsRecibidos[${itemStat.index}].cantidad" 
+                                       min="0" 
+                                       max="${item.cantidadSolicitada - item.cantidadRecibida}" 
+                                       value="0">
+                                <small class="text-muted">
+                                    Máximo por recibir: 
+                                    <span th:text="${item.cantidadSolicitada - item.cantidadRecibida}">20</span>
+                                </small>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">Número de Lote (Opcional):</label>
+                                <input type="text" class="form-control" 
+                                       name="itemsRecibidos[${itemStat.index}].numeroLote" 
+                                       placeholder="Lote-XXXX">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <label class="form-label">Observaciones:</label>
+                    <textarea class="form-control" name="observaciones" rows="3" 
+                              placeholder="Observaciones sobre la recepción..."></textarea>
+                </div>
+                
+                <hr>
+                
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <a href="/dashboard/stock/ordenes" class="btn btn-secondary me-md-2">Cancelar</a>
+                    <button type="submit" class="btn btn-primary">Registrar Recepción</button>
+                </div>
+            </form>
+        </div>
+        
+        <a href="/dashboard">Volver al Dashboard Principal</a>
+    </main>
+</div>
+</html>

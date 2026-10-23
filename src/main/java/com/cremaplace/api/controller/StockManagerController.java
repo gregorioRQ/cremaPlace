@@ -1,5 +1,6 @@
 package com.cremaplace.api.controller;
 
+import com.cremaplace.api.service.InventoryService;
 import com.cremaplace.api.service.IngredientService;
 import com.cremaplace.api.service.RecipeService;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -14,10 +15,12 @@ public class StockManagerController {
 
     private final IngredientService ingredientService;
     private final RecipeService recipeService;
+    private final InventoryService inventoryService;
 
-    public StockManagerController(IngredientService ingredientService, RecipeService recipeService) {
+    public StockManagerController(IngredientService ingredientService, RecipeService recipeService, InventoryService inventoryService) {
         this.ingredientService = ingredientService;
         this.recipeService = recipeService;
+        this.inventoryService = inventoryService;
     }
 
     // Main stock manager dashboard
@@ -48,5 +51,18 @@ public class StockManagerController {
         model.addAttribute("productId", productId);
         model.addAttribute("recipe", recipeService.getRecipeForProduct(productId));
         return "stock-manager/recipe";
+    }
+
+    // Finished products inventory management
+    @GetMapping("/inventory")
+    public String inventory(Model model) {
+        model.addAttribute("inventory", inventoryService.getAllInventory());
+        return "stock-manager/inventory";
+    }
+
+    @PostMapping("/inventory/update")
+    public String updateInventoryStock(@RequestParam String productId, @RequestParam int stock) {
+        inventoryService.updateStock(productId, stock);
+        return "redirect:/dashboard/stock/inventory";
     }
 }

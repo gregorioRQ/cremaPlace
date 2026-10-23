@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<div th:replace="~{layout/main-layout :: layout(~{::mainContent})}">
+    <main th:fragment="mainContent">
+        <h2>Detalle de Orden de Compra</h2>
+        
+        <div class="nav-links">
+            <a href="/dashboard/stock/ordenes">← Lista de Órdenes</a>
+            <a href="/dashboard/stock">Panel de Stock</a>
+            <a href="/dashboard/admin">Panel de Administración</a>
+        </div>
+        
+        <div class="card">
+            <h3>Información de la Orden</h3>
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <p><strong>Número de Orden:</strong> <span th:text="${orden.numeroOrden}">OC-0001</span></p>
+                </div>
+                <div class="col-md-4">
+                    <p><strong>Fecha:</strong> <span th:text="${#dates.format(orden.fecha, 'dd/MM/yyyy HH:mm')}">01/01/2026 10:30</span></p>
+                </div>
+                <div class="col-md-4">
+                    <p><strong>Estado:</strong> 
+                        <span th:class="${orden.estado == 'BORRADOR'} ? 'badge badge-warning' : 
+                                ${orden.estado == 'ENVIADA'} ? 'badge badge-info' : 
+                                ${orden.estado == 'PARCIAL'} ? 'badge badge-primary' : 
+                                ${orden.estado == 'COMPLETADA'} ? 'badge badge-success' : 
+                                'badge badge-danger'"
+                           th:text="${orden.estado}">ENVIADA</span>
+                    </p>
+                </div>
+            </div>
+            
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <p><strong>Proveedor ID:</strong> <span th:text="${orden.proveedorId}">PROV001</span></p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Total:</strong> <span th:text="${orden.total}">150.00</span> $</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h3>Items de la Orden</h3>
+            <div th:if="${orden.items.isEmpty()}" class="alert alert-info">
+                Esta orden no tiene items.
+            </div>
+            <div th:unless="${orden.items.isEmpty()}">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Ingrediente ID</th>
+                            <th>Cantidad Solicitada</th>
+                            <th>Cantidad Recibida</th>
+                            <th>Precio Unitario ($)</th>
+                            <th>Subtotal ($)</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="item : ${orden.items}">
+                            <td th:text="${item.ingredienteId}">harina</td>
+                            <td th:text="${item.cantidadSolicitada}">100</td>
+                            <td th:text="${item.cantidadRecibida}">80</td>
+                            <td th:text="${item.precioUnitario}">2.50</td>
+                            <td th:text="${item.subtotal}">200.00</td>
+                            <td>
+                                <span th:if="${item.cantidadRecibida == 0}" class="badge badge-secondary">Pendiente</span>
+                                <span th:if="${item.cantidadRecibida > 0 and item.cantidadRecibida < item.cantidadSolicitada}" 
+                                      class="badge badge-warning">Parcial</span>
+                                <span th:if="${item.cantidadRecibida >= item.cantidadSolicitada}" 
+                                      class="badge badge-success">Completado</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+            <a th:href="@{/dashboard/stock/ordenes/${orden.id}/enviar}" 
+               class="btn btn-success me-md-2"
+               th:if="${orden.estado == 'BORRADOR'}">Enviar Orden</a>
+            <a th:href="@{/dashboard/stock/ordenes/${orden.id}/cancelar}" 
+               class="btn btn-danger me-md-2"
+               th:if="${orden.estado == 'BORRADOR' || orden.estado == 'ENVIADA'}">Cancelar Orden</a>
+            <a th:href="@{/dashboard/stock/recepciones/nuevo/${orden.id}}" 
+               class="btn btn-info"
+               th:if="${orden.estado == 'ENVIADA' || orden.estado == 'PARCIAL'}">Registrar Recepción</a>
+            <a href="/dashboard/stock/ordenes" class="btn btn-secondary">Volver a Lista</a>
+        </div>
+        
+        <a href="/dashboard">Volver al Dashboard Principal</a>
+    </main>
+</div>
+</html>

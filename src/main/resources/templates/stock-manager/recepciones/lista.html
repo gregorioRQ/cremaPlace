@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<div th:replace="~{layout/main-layout :: layout(~{::mainContent})}">
+    <main th:fragment="mainContent">
+        <h2>Recepciones de Mercancía</h2>
+        
+        <div class="nav-links">
+            <a href="/dashboard/stock">← Panel de Stock</a>
+            <a href="/dashboard/stock/ordenes">Órdenes de Compra</a>
+            <a href="/dashboard/admin">Panel de Administración</a>
+        </div>
+        
+        <div th:if="${recepciones.isEmpty()}" class="alert alert-info">
+            No hay recepciones registradas en el sistema.
+        </div>
+        
+        <div th:unless="${recepciones.isEmpty()}">
+            <div class="card">
+                <h3>Lista de Recepciones de Mercancía</h3>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Orden Compra</th>
+                            <th>Observaciones</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="recepcion : ${recepciones}">
+                            <td th:text="${#dates.format(recepcion.fechaRecepcion, 'dd/MM/yyyy HH:mm')}">01/01/2026 14:30</td>
+                            <td>
+                                <!-- En una implementación real, cargaríamos el número de orden -->
+                                <span th:text="${recepcion.ordenCompraId}">OC_ID</span>
+                            </td>
+                            <td th:text="${recepcion.observaciones}">Recepción completa</td>
+                            <td>
+                                <a th:href="@{/dashboard/stock/recepciones/{id}(id=${recepcion.id})}" 
+                                   class="btn btn-sm btn-outline-primary">Detalle</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <a href="/dashboard">Volver al Dashboard Principal</a>
+    </main>
+</div>
+</html>

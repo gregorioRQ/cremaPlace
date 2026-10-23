@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<div th:replace="~{layout/main-layout :: layout(~{::mainContent})}">
+    <main th:fragment="mainContent">
+        <h2>Detalle de Recepción de Mercancía</h2>
+        
+        <div class="nav-links">
+            <a href="/dashboard/stock/recepciones">← Lista de Recepciones</a>
+            <a href="/dashboard/stock/ordenes">Órdenes de Compra</a>
+            <a href="/dashboard/stock">Panel de Stock</a>
+            <a href="/dashboard/admin">Panel de Administración</a>
+        </div>
+        
+        <div class="card">
+            <h3>Información de la Recepción</h3>
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <p><strong>ID Recepción:</strong> <span th:text="${recepcion.id}">REC-0001</span></p>
+                </div>
+                <div class="col-md-4">
+                    <p><strong>Fecha Recepción:</strong> <span th:text="${#dates.format(recepcion.fechaRecepcion, 'dd/MM/yyyy HH:mm')}">01/01/2026 14:30</span></p>
+                </div>
+                <div class="col-md-4">
+                    <p><strong>Orden Compra ID:</strong> <span th:text="${recepcion.ordenCompraId}">OC-0001</span></p>
+                </div>
+            </div>
+            
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    <p><strong>Observaciones:</strong> <span th:text="${recepcion.observaciones}">Ninguna</span></p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h3>Items Recibidos</h3>
+            <div th:if="${recepcion.itemsRecibidos.isEmpty()}" class="alert alert-info">
+                Esta réception no contiene items.
+            </div>
+            <div th:unless="${recepcion.itemsRecibidos.isEmpty()}">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Ingrediente ID</th>
+                            <th>Cantidad Recibida</th>
+                            <th>Número de Lote</th>
+                            <th>Fecha Vencimiento</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="item : ${recepcion.itemsRecibidos}">
+                            <td th:text="${item.ingredienteId}">harina</td>
+                            <td th:text="${item.cantidad}">50</td>
+                            <td th:text="${item.numeroLote}">LOT-2026-001</td>
+                            <td th:text="${#dates.format(item.fechaVencimiento, 'dd/MM/yyyy')}">01/02/2027</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <a href="/dashboard/stock/recepciones" class="btn btn-secondary">Volver a Lista</a>
+        <a href="/dashboard">Volver al Dashboard Principal</a>
+    </main>
+</div>
+</html>
