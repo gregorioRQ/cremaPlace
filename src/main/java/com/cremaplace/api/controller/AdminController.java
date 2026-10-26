@@ -1,8 +1,10 @@
 package com.cremaplace.api.controller;
 
+import com.cremaplace.api.model.mongo.ProveedorMongo;
 import com.cremaplace.api.service.CatalogService;
 import com.cremaplace.api.service.InventoryService;
 import com.cremaplace.api.service.OrderService;
+import com.cremaplace.api.service.ProveedorService;
 import com.cremaplace.api.service.UserService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -18,13 +20,16 @@ public class AdminController {
     private final CatalogService catalogService;
     private final InventoryService inventoryService;
     private final OrderService orderService;
+    private final ProveedorService proveedorService;
 
     public AdminController(UserService userService, CatalogService catalogService,
-                           InventoryService inventoryService, OrderService orderService) {
+                           InventoryService inventoryService, OrderService orderService,
+                           ProveedorService proveedorService) {
         this.userService = userService;
         this.catalogService = catalogService;
         this.inventoryService = inventoryService;
         this.orderService = orderService;
+        this.proveedorService = proveedorService;
     }
 
     // Main admin dashboard - redirects to users section by default
@@ -61,6 +66,13 @@ public class AdminController {
     public String manageInventory(Model model) {
         model.addAttribute("inventory", inventoryService.getAllInventory());
         return "admin/inventory";
+    }
+
+    // Supplier management page
+    @GetMapping("/proveedores")
+    public String manageSuppliers(Model model) {
+        model.addAttribute("proveedores", proveedorService.findAll());
+        return "admin/proveedores/lista";
     }
 
     @PostMapping("/users/{id}/role")
@@ -124,6 +136,38 @@ public class AdminController {
     public String updateStock(@RequestParam String productId, @RequestParam int stock) {
         inventoryService.updateStock(productId, stock);
         return "redirect:/dashboard/admin/inventory";
+    }
+
+    // Supplier management endpoints
+    @PostMapping("/proveedores/nuevo")
+    public String createSupplier(
+            @RequestParam String nombre,
+            @RequestParam String contacto,
+            @RequestParam(defaultValue = "false") boolean activo) {
+        ProveedorMongo proveedor = new ProveedorMongo(nombre, contacto, activo);
+        proveedorService.save(proveedor);
+        return "redirect:/dashboard/admin/proveedores";
+    }
+
+    @PostMapping("/proveedores/editar/{id}")
+    public String updateSupplier(
+            @PathVariable String id,
+            @RequestParam String nombre,
+            @RequestParam String contacto,
+            @RequestParam(defaultValue = "false") boolean activo) {
+        ProveedorMongo proveedor = proveedorService.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Proveedor no encontrado: " + id));
+        proveedor.setNombre(nombre);
+        proveedor.setContacto(contacto);
+        proveedor.setActivo(activo);
+        proveedorService.save(proveedor);
+        return "redirect:/dashboard/admin/proveedores";
+    }
+
+    @PostMapping("/proveedores/eliminar/{id}")
+    public String deleteSupplier(@PathVariable String id) {
+        proveedorService.deleteById(id);
+        return "redirect:/dashboard/admin/proveedores";
     }
 
     @PostMapping("/pedidos/updateEstado")

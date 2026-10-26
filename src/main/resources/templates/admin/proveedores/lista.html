@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+    <div th:replace="~{layout/main-layout :: layout(~{::mainContent})}">
+        <main th:fragment="mainContent">
+            <h2>Gestión de Proveedores</h2>
+            
+            <div class="nav-links">
+                <a href="/dashboard/admin">← Volver al Panel de Administración</a>
+                <a href="/dashboard/admin/users">Gestión de Usuarios</a>
+                <a href="/dashboard/admin/catalog">Gestión de Catálogo</a>
+                <a href="/dashboard/admin/orders">Control de Pedidos</a>
+                <a href="/dashboard/admin/inventory">Control de Inventario</a>
+            </div>
+            
+            <!-- Formulario para crear nuevo proveedor -->
+            <div class="card">
+                <h3>Agregar Nuevo Proveedor</h3>
+                <form th:action="@{/dashboard/admin/proveedores/nuevo}" method="post" style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin: 20px 0;">
+                    <strong>Nombre:</strong>
+                    <input type="text" name="nombre" placeholder="Nombre del proveedor" required/>
+                    <strong>Contacto:</strong>
+                    <input type="text" name="contacto" placeholder="Email/teléfono" required/>
+                    <div>
+                        <input type="checkbox" name="activo" id="activo" checked/>
+                        <label for="activo">Activo</label>
+                    </div>
+                    <button type="submit" class="btn-success">+ Agregar Proveedor</button>
+                </form>
+            </div>
+            
+            <hr style="margin: 20px 0; border: none; border-top: 1px solid #dee2e6;"/>
+            
+            <!-- Lista de proveedores existentes -->
+            <div th:if="${proveedores.isEmpty()}" class="alert alert-info">
+                No hay proveedores registrados en el sistema.
+            </div>
+            
+            <div th:unless="${proveedores.isEmpty()}">
+                <div class="card">
+                    <h3>Lista de Proveedores Existentes</h3>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Contacto</th>
+                                <th>Estado</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="proveedor : ${proveedores}">
+                                <td th:text="${proveedor.id}">PROV001</td>
+                                <td th:text="${proveedor.nombre}">Nombre Proveedor</td>
+                                <td th:text="${proveedor.contacto}">contacto@ejemplo.com</td>
+                                <td>
+                                    <span th:if="${proveedor.activo}" class="badge badge-success">Activo</span>
+                                    <span th:unless="${proveedor.activo}" class="badge badge-secondary">Inactivo</span>
+                                </td>
+                                <td>
+                                    <!-- Formulario de eliminación -->
+                                    <form th:action="@{/dashboard/admin/proveedores/eliminar/${proveedor.id}}" method="post" style="display: inline-block; margin-right: 5px;">
+                                        <button type="submit" class="btn-danger btn-sm">Eliminar</button>
+                                    </form>
+                                    
+                                    <!-- Formulario de actualización (embebido en la fila) -->
+                                    <form th:action="@{/dashboard/admin/proveedores/editar/${proveedor.id}}" method="post" style="display: inline-block;">
+                                        <input type="text" name="nombre" th:value="${proveedor.nombre}" placeholder="Nombre" required style="width: 120px; margin-right: 5px;">
+                                        <input type="text" name="contacto" th:value="${proveedor.contacto}" placeholder="Contacto" required style="width: 150px; margin-right: 5px;">
+                                        <div style="display: flex; align-items: center; margin-right: 5px;">
+                                            <input type="checkbox" name="activo" th:checked="${proveedor.activo}"/>
+                                            <label style="margin-left: 5px;">Activo</label>
+                                        </div>
+                                        <button type="submit" class="btn-warning btn-sm">Actualizar</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <a href="/dashboard">Volver al Dashboard Principal</a>
+        </main>
+    </div>
+</body>
+</html>

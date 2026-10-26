@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Servicio para gestión de proveedores (solo lectura para STOCK_MANAGER)
+ * Servicio para gestión de proveedores
  */
 @Service
 public class ProveedorService {
@@ -19,7 +19,7 @@ public class ProveedorService {
     }
 
     /**
-     * Obtiene todos los proveedores activos
+     * Obtiene todos los proveedores
      */
     public List<ProveedorMongo> findAll() {
         return proveedorRepository.findAll();
@@ -30,5 +30,19 @@ public class ProveedorService {
      */
     public Optional<ProveedorMongo> findById(String id) {
         return proveedorRepository.findById(id);
+    }
+
+    /**
+     * Guarda o actualiza un proveedor
+     */
+    public ProveedorMongo save(ProveedorMongo proveedor) {
+        return proveedorRepository.save(proveedor);
+    }
+
+    /**
+     * Elimina un proveedor por su ID
+     */
+    public void deleteById(String id) {
+        proveedorRepository.deleteById(id);
     }
 }
