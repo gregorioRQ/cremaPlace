@@ -32,12 +32,70 @@ El ADMIN tiene acceso total a todas las funcionalidades del sistema.
 - Crear, editar y eliminar proveedores.
 - Crear, editar y eliminar órdenes de compra.
 
-## 2. Acceso
+## 2. Recálculo Dinámico de Costos y Precios de Venta Sugeridos
+
+### 2.1 Costo Unitario de Materia Prima
+
+- Cada ingrediente debe tener un **costo unitario** (por gramo o unidad) registrado en el sistema.
+- El costo unitario se ingresa **manualmente por el ADMIN** al recibir insumos (orden de compra o ingreso a bodega).
+- El sistema utiliza el **costo más reciente conocido** de cada ingrediente para los cálculos de producción.
+
+### 2.2 Costo de Producción por Producto
+
+- El costo de producir un alfajor o tarta se calcula como: **Σ (costo unitario del ingrediente × cantidad usada en su receta)**.
+- El sistema **recalcula dinámicamente** el costo de producción de cada producto del catálogo cada vez que el ADMIN actualiza el costo de cualquiera de sus ingredientes (inflación o subida de precios).
+- El ADMIN puede consultar el costo de producción actual de cada producto desde `/dashboard/admin/costos`.
+
+### 2.3 Margen de Ganancia y Precio de Venta Sugerido
+
+- El ADMIN configura un **margen de ganancia deseado por producto individual** (porcentaje).
+- Fórmula de cálculo: `Precio Sugerido = Costo de Producción / (1 - Margen)`.
+- El sistema compara el precio sugerido con el **precio real** cargado en el catálogo del producto.
+- Si el precio real es inferior al sugerido, el sistema muestra una advertencia de **"precio por debajo del margen deseado"**.
+
+### 2.4 Acción del ADMIN sobre precios
+
+- El precio sugerido es una **recomendación visual**; no se aplica automáticamente al catálogo.
+- El ADMIN puede aceptar el precio sugerido y actualizar manualmente el precio del producto, o mantener el precio actual.
+
+### 2.5 Historial de Costos
+
+- El sistema registra un **historial de costos de producción por producto y fecha** (versiones por fecha).
+- Cada vez que el costo de producción de un producto cambia (por variación en costo de insumos), se crea un nuevo registro con la fecha del cambio.
+- El ADMIN puede ver reportes de variación de costos a lo largo del tiempo para análisis de inflación.
+
+## 3. Reportes de Ventas por Día
+
+### 3.1 Días con Mayor Cantidad de Ventas
+
+- El sistema debe identificar y mostrar los días con mayor cantidad de ventas.
+- "Cantidad de ventas" se entiende como el número total de pedidos realizados en un día.
+- El sistema agrupa los pedidos por fecha (día) a partir del campo `fechaCreacion` de cada pedido.
+- El ADMIN puede ver un listado ordenado de días, de mayor a menor cantidad de ventas.
+
+### 3.2 Cantidad de Productos Vendidos por Día
+
+- Además del número de pedidos, el sistema muestra la cantidad total de productos vendidos por día (suma de alfajores y tartas de cada pedido).
+- Cada producto dentro de un pedido cuenta como una unidad vendida.
+
+### 3.3 Visualización del Reporte
+
+- Nueva vista en `/dashboard/admin/reportes/ventas` que muestra:
+  - Ranking de días con más ventas (cantidad de pedidos y cantidad de productos).
+  - Rango de fechas seleccionable por el ADMIN (por defecto: los últimos 30 días).
+  - Total de ventas acumulado (monto y cantidad) en el período seleccionado.
+
+### 3.4 Acceso al Reporte
+
+- Exclusivo para el rol ADMIN desde `/dashboard/admin/**`.
+- Los datos son de solo lectura.
+
+## 4. Acceso
 
 - Panel exclusivo en `/dashboard/admin/**`.
 - Redirigido automáticamente al hacer login si posee el rol `ADMIN`.
 
-## 3. Permisos por Módulo
+## 5. Permisos por Módulo
 
 | Módulo | Permiso ADMIN |
 |--------|--------------|
