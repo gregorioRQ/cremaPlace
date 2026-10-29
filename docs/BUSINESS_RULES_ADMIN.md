@@ -14,6 +14,7 @@ El ADMIN tiene acceso total a todas las funcionalidades del sistema.
 ### 1.2. Gestión de Catálogo
 - **Alfajores:** Agregar, editar y eliminar alfajores (sabor, tamaño, precio, tiempo de preparación).
 - **Tartas:** Agregar, editar y eliminar tartas (sabor, precio por unidad, tiempo de preparación).
+- Define la vida útil de los productos en el catálogo.
 
 ### 1.3. Gestión de Pedidos
 - Ver todos los pedidos del sistema.
@@ -24,10 +25,25 @@ El ADMIN tiene acceso total a todas las funcionalidades del sistema.
 - Actualizar el stock de productos.
 
 ### 1.5. Gestión de Recetas Base
-- Acceso total a las recetas base (Bill of Materials) de todos los productos.
-- Puede definir la vida útil de los productos en el catálogo.
+- Registrar y mantener las recetas base de cada producto terminado, especificando la cantidad exacta de cada ingrediente requerido por unidad producida.
+- Puede ajustar las cantidades de ingredientes de cualquier receta base en cualquier momento.
+- Los cambios aplican a futuras órdenes de producción y cálculos de consumo de materia prima.
 
-### 1.6. Gestión de Compras y Proveedores
+### 1.6. Orden de Producción Diaria
+- Emitir la **Orden de Producción Diaria** desde `/dashboard/admin/orden-produccion`.
+- Revisar el stock actual de productos terminados (alfajores y tartas).
+- Ingresar la **venta proyectada** (colchón adicional) por producto para el día.
+- Seleccionar a los cocineros activos que participarán en la producción del día.
+- El sistema distribuye automáticamente las metas de producción entre los cocineros asignados (cuotas).
+- Monitorear el avance global de la orden diaria y el estado de cada cocinero.
+- Al crear/confirmar la Orden Diaria, el sistema descuenta inmediatamente todos los ingredientes necesarios según las recetas (Bill of Materials). Si falta stock de algún ingrediente, el sistema muestra advertencia pero permite la creación (el STOCK_MANAGER será responsable de reponer).
+
+### 1.7. Metas de Producción del Día
+- Cargar las metas de producción del día: seleccionar productos terminados y definir la cantidad meta a producir para cada uno (ejemplo: 100 tapas de alfajor de maicena, 50 tartas de frutilla).
+- El sistema calculará automáticamente la cantidad exacta de ingredientes necesarios basándose en las recetas base configuradas.
+- Al confirmar, se descuenta inmediatamente la materia prima del inventario.
+
+### 1.8. Gestión de Compras y Proveedores
 - Acceso total a compras y proveedores.
 - Crear, editar y eliminar proveedores.
 - Crear, editar y eliminar órdenes de compra.
@@ -109,7 +125,9 @@ El ADMIN tiene acceso total a todas las funcionalidades del sistema.
 | Compras/Proveedores | Total |
 | Usuarios | Total |
 | Orden de Producción | Total |
+| Venta Proyectada | Total |
 | Cuotas de Producción | Total |
+| Metas de Producción | Total |
 | Planillas de Producción | Total |
 | Reportes de Mermas | Total |
 | Plantilla de Lote | Total |
